@@ -14,9 +14,6 @@ import ast
 # https://github.com/mitsuhiko/flask/blob/master/setup.py
 _version_re = re.compile(r'__version__\s+=\s+(.*)')
 
-with open('q2_gneiss/__init__.py', 'rb') as f:
-    hit = _version_re.search(f.read().decode('utf-8')).group(1)
-    version = str(ast.literal_eval(hit))
 
 setup(
     name="q2-gneiss",
@@ -26,8 +23,7 @@ setup(
     # visualizers provided as examples. Remove these dependencies when you're
     # ready to develop your plugin, and add your own dependencies (if there are
     # any).
-    install_requires=['qiime >= 2.0.5', 'pandas',
-                      'numpy' , 'gneiss>=0.3.0'],
+    install_requires=['pandas', 'numpy' , 'gneiss>=0.3.0'],
     author="Jamie Morton",
     author_email="jamietmorton@gmail.com",
     description="Compositional Data Analysis and Visualization Toolbox",
@@ -37,7 +33,6 @@ setup(
         'q2': ['qiime2 >= 2017.2.0', 'biom-format', 'seaborn']
     },
     entry_points={
-        'qiime.plugins':
-        ['q2-gneiss=q2_gneiss.plugin_setup:plugin']
+        'qiime2.plugins': ['q2-gneiss=q2_gneiss.plugin_setup:plugin']
     }
 )
