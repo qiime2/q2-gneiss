@@ -1,11 +1,10 @@
 # ----------------------------------------------------------------------------
-# Copyright (c) 2016--, Gneiss development team.
+# Copyright (c) 2016-2017, QIIME 2 development team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
-
 from setuptools import setup, find_packages
 import re
 
@@ -26,7 +25,7 @@ setup(
     author="Jamie Morton",
     author_email="jamietmorton@gmail.com",
     description="Compositional Data Analysis and Visualization Toolbox",
-    license="bsd",
+    license='BSD-3-Clause',
     url="https://github.com/biocore/gneiss",
     extra_require={
         'q2': ['qiime2 >= 2017.2.0', 'biom-format', 'seaborn']
