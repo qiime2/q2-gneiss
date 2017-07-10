@@ -5,15 +5,11 @@
 #
 # The full license is in the file COPYING.txt, distributed with this software.
 # ----------------------------------------------------------------------------
-import pandas as pd
-import skbio
 from q2_composition.plugin_setup import Composition
 from q2_types.tree import Hierarchy
 from q2_gneiss.plugin_setup import plugin
-from gneiss.balances import balance_basis
 from q2_composition._type import Balance
 from q2_types.feature_table import FeatureTable
-from gneiss.util import match_tips
 from gneiss.composition import ilr_transform
 
 

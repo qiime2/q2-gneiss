@@ -8,7 +8,6 @@
 
 from setuptools import setup, find_packages
 import re
-import ast
 
 # version parsing from __init__ pulled from Flask's setup.py
 # https://github.com/mitsuhiko/flask/blob/master/setup.py
@@ -23,7 +22,7 @@ setup(
     # visualizers provided as examples. Remove these dependencies when you're
     # ready to develop your plugin, and add your own dependencies (if there are
     # any).
-    install_requires=['pandas', 'numpy' , 'gneiss>=0.3.0'],
+    install_requires=['pandas', 'numpy', 'gneiss>=0.3.0'],
     author="Jamie Morton",
     author_email="jamietmorton@gmail.com",
     description="Compositional Data Analysis and Visualization Toolbox",
