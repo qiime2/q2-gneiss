@@ -16,6 +16,7 @@ install:
   - source activate test-env
   - conda install -q pytest-cov
   - pip install -q flake8 coveralls
+  - pip install -r ci/pip_requirements.txt
   - python setup.py install
 script:
   - flake8
