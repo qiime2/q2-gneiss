@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# Copyright (c) 2016--, Gneiss development team.
+# Copyright (c) 2016-2017, QIIME 2 development team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
