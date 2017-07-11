@@ -15,7 +15,7 @@ import pandas.util.testing as pdt
 from scipy.cluster.hierarchy import ward
 
 from skbio import TreeNode, DistanceMatrix
-from gneiss.plot._plot import dendrogram_heatmap, balance_taxonomy
+from q2_gneiss.plot._plot import dendrogram_heatmap, balance_taxonomy
 from qiime2 import MetadataCategory
 
 
