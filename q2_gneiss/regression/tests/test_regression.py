@@ -11,12 +11,10 @@ import unittest
 import pandas as pd
 import pandas.util.testing as pdt
 from skbio.util import get_data_path
-from gneiss.regression.tests.test_ols import TestOLS
-from gneiss.regression.tests.test_mixedlm import TestMixedLM
 import qiime2
 
 
-class TestOLSPlugin(TestOLS):
+class TestOLSPlugin(unittest.TestCase):
 
     def test_ols_artifact(self):
         from qiime2.plugins.gneiss.visualizers import ols_regression
@@ -66,7 +64,7 @@ class TestOLSPlugin(TestOLS):
         shutil.rmtree('regression_summary_dir')
 
 
-class TestMixedLMPlugin(TestMixedLM):
+class TestMixedLMPlugin(unittest.TestCase):
 
     def test_lme_artifact(self):
         from qiime2.plugins.gneiss.visualizers import lme_regression
