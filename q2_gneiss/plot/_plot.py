@@ -67,6 +67,7 @@ def balance_taxonomy(output_dir: str, balances: pd.DataFrame, tree: TreeNode,
     ax_num.set_title('Numerator taxa (%d taxa)' % len(num_features))
     ax_denom.set_title('Denominator taxa (%d taxa)' % len(denom_features))
     ax_denom.set_xlabel('Number of taxa')
+    plt.tight_layout()
     fig.savefig(os.path.join(output_dir, 'barplots.svg'))
 
     if metadata is not None:
