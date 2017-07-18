@@ -196,6 +196,7 @@ def dendrogram_heatmap(output_dir: str, table: pd.DataFrame,
                   highlight_width=0.01, figsize=(12, 8))
     fig.savefig(os.path.join(output_dir, 'heatmap.svg'))
     fig.savefig(os.path.join(output_dir, 'heatmap.pdf'))
+
     css = r"""
         .square {
           float: left;
