@@ -89,9 +89,10 @@ def balance_taxonomy(output_dir: str, balances: pd.DataFrame, tree: TreeNode,
         except:
             balance_boxplot(balance_name, data, y=c.name, ax=ax)
 
-        ylabel = r"$%s = \ln \frac{%s_{numerator}}{%s_{denominator}}$" % (balance_name,
-                                                                          balance_name,
-                                                                          balance_name)
+        ylabel = (r"$%s = \ln \frac{%s_{numerator}}"
+                  "{%s_{denominator}}$") % (balance_name,
+                                            balance_name,
+                                            balance_name)
         ax.set_title(ylabel, rotation=0)
         ax.set_ylabel('log ratio')
         fig2.savefig(os.path.join(output_dir, 'balance_metadata.svg'))
@@ -105,9 +106,7 @@ def balance_taxonomy(output_dir: str, balances: pd.DataFrame, tree: TreeNode,
             index_f.write(('<img src="balance_metadata.svg" '
                            'alt="barplots">\n\n'
                            '<a href="balance_metadata.pdf">'
-                           'Download as PDF</a><br>\n'
-            ))
-
+                           'Download as PDF</a><br>\n'))
 
         index_f.write(('<h1>Balance Taxonomy</h1>\n'
                        '<img src="barplots.svg" alt="barplots">\n\n'
