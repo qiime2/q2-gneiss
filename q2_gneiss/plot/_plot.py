@@ -60,8 +60,11 @@ def balance_taxonomy(output_dir: str, balances: pd.DataFrame, tree: TreeNode,
     else:
         denom_features = taxa_df.loc[denom_clade.subset()]
 
+    num_color, denom_color = '#4c72b0', '#4c72b0'
+
     fig, (ax_num, ax_denom) = plt.subplots(2)
     balance_barplots(tree, balance_name, taxa_level, taxa_df,
+                     denom_color=denom_color, num_color=num_color,
                      axes=(ax_num, ax_denom))
 
     ax_num.set_title(
