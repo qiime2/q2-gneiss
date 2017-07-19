@@ -60,14 +60,23 @@ def balance_taxonomy(output_dir: str, balances: pd.DataFrame, tree: TreeNode,
     else:
         denom_features = taxa_df.loc[denom_clade.subset()]
 
+    num_color, denom_color = '#4c72b0', '#4c72b0'
+
     fig, (ax_num, ax_denom) = plt.subplots(2)
     balance_barplots(tree, balance_name, taxa_level, taxa_df,
+                     denom_color=denom_color, num_color=num_color,
                      axes=(ax_num, ax_denom))
 
-    ax_num.set_title('Numerator taxa (%d taxa)' % len(num_features))
-    ax_denom.set_title('Denominator taxa (%d taxa)' % len(denom_features))
-    ax_denom.set_xlabel('Number of taxa')
+    ax_num.set_title(
+        r'$%s_{numerator} \; taxa \; (%d \; taxa)$' % (balance_name,
+                                                       len(num_features)))
+    ax_denom.set_title(
+        r'$%s_{denominator} \; taxa \; (%d \; taxa)$' % (balance_name,
+                                                         len(denom_features)))
+    ax_denom.set_xlabel('Number of unique taxa')
+    plt.tight_layout()
     fig.savefig(os.path.join(output_dir, 'barplots.svg'))
+    fig.savefig(os.path.join(output_dir, 'barplots.pdf'))
 
     if metadata is not None:
         fig2, ax = plt.subplots()
@@ -80,10 +89,17 @@ def balance_taxonomy(output_dir: str, balances: pd.DataFrame, tree: TreeNode,
             c = c.astype(np.float64)
             ax.scatter(c.values, y)
             ax.set_xlabel(c.name)
-            ax.set_ylabel(balance_name)
         except:
             balance_boxplot(balance_name, data, y=c.name, ax=ax)
+
+        ylabel = (r"$%s = \ln \frac{%s_{numerator}}"
+                  "{%s_{denominator}}$") % (balance_name,
+                                            balance_name,
+                                            balance_name)
+        ax.set_title(ylabel, rotation=0)
+        ax.set_ylabel('log ratio')
         fig2.savefig(os.path.join(output_dir, 'balance_metadata.svg'))
+        fig2.savefig(os.path.join(output_dir, 'balance_metadata.pdf'))
 
     index_fp = os.path.join(output_dir, 'index.html')
     with open(index_fp, 'w') as index_f:
@@ -91,10 +107,14 @@ def balance_taxonomy(output_dir: str, balances: pd.DataFrame, tree: TreeNode,
         if metadata is not None:
             index_f.write('<h1>Balance vs %s </h1>\n' % c.name)
             index_f.write(('<img src="balance_metadata.svg" '
-                           'alt="barplots">\n\n'))
+                           'alt="barplots">\n\n'
+                           '<a href="balance_metadata.pdf">'
+                           'Download as PDF</a><br>\n'))
 
         index_f.write(('<h1>Balance Taxonomy</h1>\n'
                        '<img src="barplots.svg" alt="barplots">\n\n'
+                       '<a href="barplots.pdf">'
+                       'Download as PDF</a><br>\n'
                        '<h3>Numerator taxa</h3>\n'
                        '<a href="numerator.csv">\n'
                        'Download as CSV</a><br>\n'
@@ -160,7 +180,8 @@ def dendrogram_heatmap(output_dir: str, table: pd.DataFrame,
     nodes = [n.name for n in tree.levelorder() if not n.is_tip()]
 
     nlen = min(ndim, len(nodes))
-    highlights = pd.DataFrame([['#00FF00', '#FF0000']] * nlen,
+    numerator_color, denominator_color = '#fb9a99', '#e31a1c'
+    highlights = pd.DataFrame([[numerator_color, denominator_color]] * nlen,
                               index=nodes[:nlen])
     if method == 'clr':
         mat = pd.DataFrame(clr(centralize(table)),
@@ -176,12 +197,38 @@ def dendrogram_heatmap(output_dir: str, table: pd.DataFrame,
     fig = heatmap(mat, tree, metadata.to_series(), highlights, cmap=color_map,
                   highlight_width=0.01, figsize=(12, 8))
     fig.savefig(os.path.join(output_dir, 'heatmap.svg'))
+    fig.savefig(os.path.join(output_dir, 'heatmap.pdf'))
+
+    css = r"""
+        .square {
+          float: left;
+          width: 100px;
+          height: 20px;
+          margin: 5px;
+          border: 1px solid rgba(0, 0, 0, .2);
+        }
+
+        .numerator {
+          background: %s;
+        }
+
+        .denominator {
+          background: %s;
+        }
+    """ % (numerator_color, denominator_color)
 
     index_fp = os.path.join(output_dir, 'index.html')
     with open(index_fp, 'w') as index_f:
         index_f.write('<html><body>\n')
         index_f.write('<h1>Dendrogram heatmap</h1>\n')
         index_f.write('<img src="heatmap.svg" alt="heatmap">')
+        index_f.write('<a href="heatmap.pdf">')
+        index_f.write('Download as PDF</a><br>\n')
+        index_f.write('<style>%s</style>' % css)
+        index_f.write('<div class="square numerator">'
+                      'Numerator<br/></div>')
+        index_f.write('<div class="square denominator">'
+                      'Denominator<br/></div>')
         index_f.write('</body></html>\n')
 
 
