@@ -180,7 +180,7 @@ def dendrogram_heatmap(output_dir: str, table: pd.DataFrame,
     nodes = [n.name for n in tree.levelorder() if not n.is_tip()]
 
     nlen = min(ndim, len(nodes))
-    numerator_color, denominator_color = '#00FF00', '#FFA500'
+    numerator_color, denominator_color = '#fb9a99', '#e31a1c'
     highlights = pd.DataFrame([[numerator_color, denominator_color]] * nlen,
                               index=nodes[:nlen])
     if method == 'clr':
