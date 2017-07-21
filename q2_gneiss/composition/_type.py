@@ -6,7 +6,6 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 from qiime2.plugin import SemanticType
-from q2_gneiss.plugin_setup import plugin
 from q2_types.feature_table import FeatureTable
 
 
@@ -15,4 +14,3 @@ Composition = SemanticType('Composition',
 
 Balance = SemanticType('Balance',
                        variant_of=FeatureTable.field['content'])
-

@@ -8,9 +8,6 @@
 import biom
 import numpy as np
 from skbio.stats.composition import multiplicative_replacement, closure
-from q2_gneiss.plugin_setup import plugin
-from q2_types.feature_table import (
-    FeatureTable, Frequency)
 
 
 def add_pseudocount(table: biom.Table,
