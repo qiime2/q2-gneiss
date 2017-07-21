@@ -10,7 +10,7 @@ import pandas as pd
 import numpy as np
 import skbio
 
-from q2_composition.plugin_setup import Composition
+from q2_gneiss.composition._type import Composition
 from q2_types.feature_table import FeatureTable, Frequency, RelativeFrequency
 from q2_types.tree import Hierarchy, Phylogeny, Rooted
 from qiime2.plugin import MetadataCategory, Bool
