@@ -9,7 +9,7 @@ import importlib
 
 import qiime2.plugin
 import qiime2.sdk
-from gneiss import __version__
+from q2_gneiss import __version__
 
 
 _citation = ('Morton JT, Sanders J, Quinn RA, McDonald D, Gonzalez A, '
