@@ -10,7 +10,7 @@ import skbio
 from gneiss.regression._ols import ols
 from gneiss.regression._mixedlm import mixedlm
 
-from q2_composition.plugin_setup import Balance
+from q2_gneiss.composition._type import Balance
 from q2_types.feature_table import FeatureTable
 from q2_types.tree import Hierarchy
 from qiime2.plugin import Str, Metadata

@@ -8,12 +8,12 @@
 
 import unittest
 
-from q2_composition import Composition, Balance
+from q2_gneiss.composition._type import Composition, Balance
 from qiime2.plugin.testing import TestPluginBase
 
 
 class TestTypes(TestPluginBase):
-    package = "q2_composition.tests"
+    package = "q2_gneiss.composition.tests"
 
     def test_composition_semantic_type_registration(self):
         self.assertRegisteredSemanticType(Composition)

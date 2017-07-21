@@ -5,13 +5,24 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
-from q2_composition.plugin_setup import Composition
-from q2_types.tree import Hierarchy
 from q2_gneiss.plugin_setup import plugin
-from q2_composition._type import Balance
-from q2_types.feature_table import FeatureTable
+from q2_gneiss.composition._impute import add_pseudocount
+from q2_gneiss.composition._type import Composition, Balance
+from q2_types.feature_table import (
+    FeatureTable, BIOMV210DirFmt, Frequency)
+from q2_types.tree import Hierarchy
 from gneiss.composition import ilr_transform
+from qiime2.plugin import Float, Bool
 
+
+plugin.register_semantic_types(Composition)
+
+plugin.register_semantic_type_to_format(
+    FeatureTable[Composition],
+    artifact_format=BIOMV210DirFmt
+)
+
+plugin.register_semantic_types(Balance)
 
 plugin.methods.register_function(
     function=ilr_transform,
@@ -35,4 +46,24 @@ plugin.methods.register_function(
     output_descriptions={'balances': ('The resulting balances from the '
                                       'ilr transform.')},
     description="Calculate balances given a hierarchy."
+)
+
+
+plugin.methods.register_function(
+    function=add_pseudocount,
+    inputs={'table': FeatureTable[Frequency]},
+    parameters={'pseudocount': Float,
+                'multiplicative': Bool},
+    outputs=[('composition_table', FeatureTable[Composition])],
+    input_descriptions={
+        'table': 'The feature table to which pseudocounts should be added.'
+    },
+    parameter_descriptions={
+        'pseudocount': 'The value to add to all counts in the feature table.'
+    },
+    output_descriptions={
+        'composition_table': 'The resulting feature table.'
+    },
+    name='Add pseudocount to table',
+    description="Increment all counts in table by pseudocount."
 )
