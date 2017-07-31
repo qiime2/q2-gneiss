@@ -14,15 +14,6 @@ from gneiss.composition import ilr_transform
 from qiime2.plugin import Int
 
 
-plugin.register_semantic_types(Composition)
-
-plugin.register_semantic_type_to_format(
-    FeatureTable[Composition],
-    artifact_format=BIOMV210DirFmt
-)
-
-plugin.register_semantic_types(Balance)
-
 plugin.methods.register_function(
     function=add_pseudocount,
     inputs={'table': FeatureTable[Frequency]},
@@ -64,24 +55,4 @@ plugin.methods.register_function(
     output_descriptions={'balances': ('The resulting balances from the '
                                       'ilr transform.')},
     description="Calculate balances given a hierarchy."
-)
-
-
-plugin.methods.register_function(
-    function=add_pseudocount,
-    inputs={'table': FeatureTable[Frequency]},
-    parameters={'pseudocount': Float,
-                'multiplicative': Bool},
-    outputs=[('composition_table', FeatureTable[Composition])],
-    input_descriptions={
-        'table': 'The feature table to which pseudocounts should be added.'
-    },
-    parameter_descriptions={
-        'pseudocount': 'The value to add to all counts in the feature table.'
-    },
-    output_descriptions={
-        'composition_table': 'The resulting feature table.'
-    },
-    name='Add pseudocount to table',
-    description="Increment all counts in table by pseudocount."
 )
