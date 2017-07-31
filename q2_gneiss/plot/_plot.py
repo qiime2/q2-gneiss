@@ -18,8 +18,7 @@ from gneiss.plot._decompose import balance_barplots, balance_boxplot
 from gneiss.util import (match, match_tips, NUMERATOR, DENOMINATOR)
 
 from q2_types.tree import Hierarchy
-from q2_gneiss.composition._type import Composition, Balance
-from q2_types.feature_table import FeatureTable
+from q2_types.feature_table import FeatureTable, Composition, Balance
 from q2_types.feature_data import FeatureData, Taxonomy
 from qiime2.plugin import Int, MetadataCategory, Str, Choices
 
