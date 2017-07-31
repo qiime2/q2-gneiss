@@ -15,7 +15,7 @@ from skbio.stats.composition import clr, centralize
 from q2_gneiss.plugin_setup import plugin
 from gneiss.plot._heatmap import heatmap
 from gneiss.plot._decompose import balance_barplots, balance_boxplot
-from gneiss.util import (match, NUMERATOR, DENOMINATOR)
+from gneiss.util import (match, match_tips, NUMERATOR, DENOMINATOR)
 
 from q2_types.tree import Hierarchy
 from q2_gneiss.composition._type import Composition, Balance
@@ -177,6 +177,7 @@ def dendrogram_heatmap(output_dir: str, table: pd.DataFrame,
                        tree: TreeNode, metadata: MetadataCategory,
                        ndim=10, method='clr', color_map='viridis'):
 
+    table, tree = match_tips(table, tree)
     nodes = [n.name for n in tree.levelorder() if not n.is_tip()]
 
     nlen = min(ndim, len(nodes))
