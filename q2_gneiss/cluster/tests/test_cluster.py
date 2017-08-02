@@ -41,6 +41,20 @@ class TestClusteringPlugin(unittest.TestCase):
         exp_str = '((o1:0.5,o2:0.5)y1:0.5,(o3:0.5,o4:0.5)y2:0.5)y0;\n'
         self.assertEqual(exp_str, str(res_clust))
 
+    def test_gradient_match(self):
+        # there are extra rows in match that need to be filtered out
+        from qiime2.plugins.gneiss.methods import gradient_clustering
+        table_f = get_data_path("test_gradient.biom.qza")
+        metadata_f = get_data_path("test_metadata2.txt")
+        in_table = qiime2.Artifact.load(table_f)
+        in_metadata = qiime2.Metadata(
+            pd.read_table(metadata_f, index_col=0))
+
+        res = gradient_clustering(in_table, in_metadata.get_category('x'))
+        res_clust = res.clustering._view(TreeNode)
+        exp_str = '((o1:0.5,o2:0.5)y1:0.5,(o3:0.5,o4:0.5)y2:0.5)y0;\n'
+        self.assertEqual(exp_str, str(res_clust))
+
     def test_gradient_artifact_weighted(self):
         from qiime2.plugins.gneiss.methods import gradient_clustering
         table_f = get_data_path("weighted.biom.qza")
