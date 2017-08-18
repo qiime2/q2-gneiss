@@ -17,7 +17,7 @@ from qiime2.plugin import MetadataCategory, Bool
 from q2_gneiss.plugin_setup import plugin
 from gneiss.cluster._pba import correlation_linkage, gradient_linkage
 from gneiss.sort import gradient_sort, mean_niche_estimator
-from gneiss.util import rename_internal_nodes
+from gneiss.util import rename_internal_nodes, match
 
 
 def correlation_clustering(table: pd.DataFrame) -> skbio.TreeNode:
@@ -84,7 +84,7 @@ def gradient_clustering(table: pd.DataFrame,
     c = c.astype(np.float)
     if not weighted:
         table = table > 0
-
+    table, c = match(table, c)
     t = gradient_linkage(table, c, method='average')
     mean_g = mean_niche_estimator(table, c)
     mean_g = pd.Series(mean_g, index=table.columns)
