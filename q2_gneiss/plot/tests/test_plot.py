@@ -32,8 +32,10 @@ class TestHeatmap(unittest.TestCase):
     def test_visualization(self):
         np.random.seed(0)
         num_otus = 500  # otus
-        table = pd.DataFrame(np.random.random((num_otus, 5)),
-                             index=np.arange(num_otus).astype(np.str)).T
+        index = np.arange(5).astype(np.str)
+        table = pd.DataFrame(np.random.random((len(index), num_otus)),
+                             index=index,
+                             columns=np.arange(num_otus).astype(np.str))
 
         x = np.random.rand(num_otus)
         dm = DistanceMatrix.from_iterable(x, lambda x, y: np.abs(x-y))
@@ -46,7 +48,7 @@ class TestHeatmap(unittest.TestCase):
             n.length = np.random.rand()*3
 
         md = MetadataCategory(
-            pd.Series(['a', 'a', 'a', 'b', 'b']))
+            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index))
 
         dendrogram_heatmap(self.results, table, t, md)
 
@@ -62,8 +64,10 @@ class TestHeatmap(unittest.TestCase):
         # tests the scenario where ndim > number of tips
         np.random.seed(0)
         num_otus = 11  # otus
-        table = pd.DataFrame(np.random.random((num_otus, 5)),
-                             index=np.arange(num_otus).astype(np.str)).T
+        index = np.arange(5).astype(np.str)
+        table = pd.DataFrame(np.random.random((len(index), num_otus)),
+                             index=index,
+                             columns=np.arange(num_otus).astype(np.str))
 
         x = np.random.rand(num_otus)
         dm = DistanceMatrix.from_iterable(x, lambda x, y: np.abs(x-y))
@@ -76,7 +80,7 @@ class TestHeatmap(unittest.TestCase):
             n.length = np.random.rand()*3
 
         md = MetadataCategory(
-            pd.Series(['a', 'a', 'a', 'b', 'b']))
+            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index))
 
         dendrogram_heatmap(self.results, table, t, md)
 
@@ -92,8 +96,10 @@ class TestHeatmap(unittest.TestCase):
         # tests the scenario where ndim > number of tips
         np.random.seed(0)
         num_otus = 10  # otus
-        table = pd.DataFrame(np.random.random((num_otus, 5)),
-                             index=np.arange(num_otus).astype(np.str)).T
+        num_samples = 5
+        table = pd.DataFrame(np.random.random((num_samples, num_otus)),
+                             index=np.arange(num_samples).astype(np.str),
+                             columns=np.arange(num_otus).astype(np.str))
 
         x = np.random.rand(num_otus)
         dm = DistanceMatrix.from_iterable(x, lambda x, y: np.abs(x-y))
@@ -106,7 +112,8 @@ class TestHeatmap(unittest.TestCase):
             n.length = np.random.rand()*3
 
         md = MetadataCategory(
-            pd.Series(['a', 'a', 'a', 'b', 'b', 'foo', 'foo']))
+            pd.Series(['a', 'a', 'a', 'b', 'b', 'foo', 'foo'],
+                      index=np.arange(7).astype(np.str)))
 
         dendrogram_heatmap(self.results, table, t, md)
 
@@ -123,8 +130,10 @@ class TestHeatmap(unittest.TestCase):
         # in the table
         np.random.seed(0)
         num_otus = 11  # otus
-        table = pd.DataFrame(np.random.random((num_otus, 5)),
-                             index=np.arange(num_otus).astype(np.str)).T
+        index = np.arange(5).astype(np.str)
+        table = pd.DataFrame(np.random.random((len(index), num_otus)),
+                             index=index,
+                             columns=np.arange(num_otus).astype(np.str))
 
         x = np.random.rand(num_otus*2)
         dm = DistanceMatrix.from_iterable(x, lambda x, y: np.abs(x-y))
@@ -137,7 +146,7 @@ class TestHeatmap(unittest.TestCase):
             n.length = np.random.rand()*3
 
         md = MetadataCategory(
-            pd.Series(['a', 'a', 'a', 'b', 'b']))
+            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index))
 
         dendrogram_heatmap(self.results, table, t, md)
 
