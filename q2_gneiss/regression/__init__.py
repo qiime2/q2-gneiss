@@ -8,4 +8,4 @@
 from ._regression import lme_regression, ols_regression
 
 
-__all__ = ["lme_regression", "ols_regression"]
+__all__ = ["lme_regression", "ols_regression", "core_regression"]
