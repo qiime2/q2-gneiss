@@ -51,6 +51,7 @@ plugin.visualizers.register_function(
     description="Perform linear regression on balances."
 )
 
+
 def core_regression(output_dir: str,
                     table: pd.DataFrame, tree: skbio.TreeNode,
                     metadata: Metadata, formula: str,
@@ -82,7 +83,8 @@ plugin.visualizers.register_function(
         'formula': 'Statistical formula specifying the statistical model.',
         'metadata': ('Metadata information that contains the '
                      'covariates of interest.'),
-        'pseudocount': 'The pseudocount to add to avoid taking the logarithm of zero.'
+        'pseudocount': ('The pseudocount to add to avoid taking the '
+                        'logarithm of zero.')
     },
     description="Perform simplicial linear regression."
 )
