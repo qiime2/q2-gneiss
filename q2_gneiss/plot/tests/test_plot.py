@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# Copyright (c) 2016-2017, QIIME 2 development team.
+# Copyright (c) 2017, QIIME 2 development team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -32,8 +32,10 @@ class TestHeatmap(unittest.TestCase):
     def test_visualization(self):
         np.random.seed(0)
         num_otus = 500  # otus
-        table = pd.DataFrame(np.random.random((num_otus, 5)),
-                             index=np.arange(num_otus).astype(np.str)).T
+        index = np.arange(5).astype(np.str)
+        table = pd.DataFrame(np.random.random((len(index), num_otus)),
+                             index=index,
+                             columns=np.arange(num_otus).astype(np.str))
 
         x = np.random.rand(num_otus)
         dm = DistanceMatrix.from_iterable(x, lambda x, y: np.abs(x-y))
@@ -46,7 +48,7 @@ class TestHeatmap(unittest.TestCase):
             n.length = np.random.rand()*3
 
         md = MetadataCategory(
-            pd.Series(['a', 'a', 'a', 'b', 'b']))
+            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index))
 
         dendrogram_heatmap(self.results, table, t, md)
 
@@ -62,8 +64,10 @@ class TestHeatmap(unittest.TestCase):
         # tests the scenario where ndim > number of tips
         np.random.seed(0)
         num_otus = 11  # otus
-        table = pd.DataFrame(np.random.random((num_otus, 5)),
-                             index=np.arange(num_otus).astype(np.str)).T
+        index = np.arange(5).astype(np.str)
+        table = pd.DataFrame(np.random.random((len(index), num_otus)),
+                             index=index,
+                             columns=np.arange(num_otus).astype(np.str))
 
         x = np.random.rand(num_otus)
         dm = DistanceMatrix.from_iterable(x, lambda x, y: np.abs(x-y))
@@ -76,7 +80,40 @@ class TestHeatmap(unittest.TestCase):
             n.length = np.random.rand()*3
 
         md = MetadataCategory(
-            pd.Series(['a', 'a', 'a', 'b', 'b']))
+            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index))
+
+        dendrogram_heatmap(self.results, table, t, md)
+
+        index_fp = os.path.join(self.results, 'index.html')
+        self.assertTrue(os.path.exists(index_fp))
+
+        with open(index_fp, 'r') as fh:
+            html = fh.read()
+            self.assertIn('<h1>Dendrogram heatmap</h1>',
+                          html)
+
+    def test_visualization_garbage_metadata(self):
+        # tests the scenario where ndim > number of tips
+        np.random.seed(0)
+        num_otus = 10  # otus
+        num_samples = 5
+        table = pd.DataFrame(np.random.random((num_samples, num_otus)),
+                             index=np.arange(num_samples).astype(np.str),
+                             columns=np.arange(num_otus).astype(np.str))
+
+        x = np.random.rand(num_otus)
+        dm = DistanceMatrix.from_iterable(x, lambda x, y: np.abs(x-y))
+        lm = ward(dm.condensed_form())
+        t = TreeNode.from_linkage_matrix(lm, np.arange(len(x)).astype(np.str))
+
+        for i, n in enumerate(t.postorder()):
+            if not n.is_tip():
+                n.name = "y%d" % i
+            n.length = np.random.rand()*3
+
+        md = MetadataCategory(
+            pd.Series(['a', 'a', 'a', 'b', 'b', 'foo', 'foo'],
+                      index=np.arange(7).astype(np.str)))
 
         dendrogram_heatmap(self.results, table, t, md)
 
@@ -123,8 +160,10 @@ class TestHeatmap(unittest.TestCase):
         # in the table
         np.random.seed(0)
         num_otus = 11  # otus
-        table = pd.DataFrame(np.random.random((num_otus, 5)),
-                             index=np.arange(num_otus).astype(np.str)).T
+        index = np.arange(5).astype(np.str)
+        table = pd.DataFrame(np.random.random((len(index), num_otus)),
+                             index=index,
+                             columns=np.arange(num_otus).astype(np.str))
 
         x = np.random.rand(num_otus*2)
         dm = DistanceMatrix.from_iterable(x, lambda x, y: np.abs(x-y))
@@ -137,7 +176,7 @@ class TestHeatmap(unittest.TestCase):
             n.length = np.random.rand()*3
 
         md = MetadataCategory(
-            pd.Series(['a', 'a', 'a', 'b', 'b']))
+            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index))
 
         dendrogram_heatmap(self.results, table, t, md)
 
