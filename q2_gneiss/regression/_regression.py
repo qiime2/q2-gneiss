@@ -13,7 +13,7 @@ from q2_types.tree import Hierarchy
 from qiime2.plugin import Str, Metadata, Float
 from q2_gneiss.plugin_setup import plugin
 from gneiss.plot._regression_plot import ols_summary, lme_summary
-from gneiss.util import match_tips, match
+from gneiss.util import match_tips
 from gneiss.composition import ilr_transform
 from gneiss.regression._ols import ols
 from gneiss.regression._mixedlm import mixedlm
@@ -27,6 +27,7 @@ def ols_regression(output_dir: str,
     res.fit()
 
     ols_summary(output_dir, res, tree)
+
 
 plugin.visualizers.register_function(
     function=ols_regression,
