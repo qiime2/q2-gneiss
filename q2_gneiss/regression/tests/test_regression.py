@@ -14,9 +14,9 @@ from skbio.util import get_data_path
 import qiime2
 
 
-class TestCoreOLS(unittest.TestCase):
-    def test_core_ols_artifact(self):
-        from qiime2.plugins.gneiss.visualizers import core_regression
+class TestPhylogeneticOLS(unittest.TestCase):
+    def test_phylogenetic_ols_artifact(self):
+        from qiime2.plugins.gneiss.visualizers import phylogenetic_regression
         table_f = get_data_path("table.qza")
         tree_f = get_data_path("ols_tree.qza")
         metadata_f = get_data_path("test_ols_metadata.txt")
@@ -26,7 +26,7 @@ class TestCoreOLS(unittest.TestCase):
         in_metadata = qiime2.Metadata(
             pd.read_table(metadata_f, index_col=0))
 
-        viz = core_regression(in_table, in_tree, in_metadata, 'ph')
+        viz = phylogenetic_regression(in_table, in_tree, in_metadata, 'ph')
         os.mkdir('regression_summary_dir')
         viz.visualization.export_data('regression_summary_dir')
 

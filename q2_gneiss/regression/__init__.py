@@ -5,7 +5,7 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
-from ._regression import lme_regression, ols_regression
+from ._regression import lme_regression, ols_regression, phylogenetic_regression
 
 
-__all__ = ["lme_regression", "ols_regression", "core_regression"]
+__all__ = ["lme_regression", "ols_regression", "phylogenetic_regression"]
