@@ -65,7 +65,7 @@ def phylogenetic_regression(output_dir: str,
         if not n.is_tip():
             if n.name is None:
                 names.append('y%i' % i)
-                i+=1
+                i += 1
             else:
                 names.append(n.name)
     _tree = rename_internal_nodes(_tree, names=names)

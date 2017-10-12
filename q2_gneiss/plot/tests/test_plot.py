@@ -125,7 +125,6 @@ class TestHeatmap(unittest.TestCase):
             self.assertIn('<h1>Dendrogram heatmap</h1>',
                           html)
 
-
     def test_heatmap_extra_tips(self):
         # Adds in test scenario where there more tips than features
         # in the table
