@@ -18,7 +18,7 @@ class TestPhylogeneticOLS(unittest.TestCase):
     def test_phylogenetic_ols_artifact(self):
         from qiime2.plugins.gneiss.visualizers import phylogenetic_regression
         table_f = get_data_path("table.qza")
-        tree_f = get_data_path("ols_tree.qza")
+        tree_f = get_data_path("phylogeny.qza")
         metadata_f = get_data_path("test_ols_metadata.txt")
 
         in_table = qiime2.Artifact.load(table_f)
