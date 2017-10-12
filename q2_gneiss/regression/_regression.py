@@ -59,16 +59,8 @@ def phylogenetic_regression(output_dir: str,
                             pseudocount: float=1):
 
     _table, _tree = match_tips(table, tree)
-    # rename internal nodes if they don't exist
-    i, names = 0, []
-    for n in _tree.levelorder():
-        if not n.is_tip():
-            if n.name is None:
-                names.append('y%i' % i)
-                i += 1
-            else:
-                names.append(n.name)
-    _tree = rename_internal_nodes(_tree, names=names)
+    # rename internal nodes
+    _tree = rename_internal_nodes(_tree)
     balances = ilr_transform(_table+pseudocount, _tree)
     ols_regression(output_dir, balances, _tree,
                    metadata, formula)
