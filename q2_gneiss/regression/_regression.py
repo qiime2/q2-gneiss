@@ -7,14 +7,16 @@
 # ----------------------------------------------------------------------------
 import pandas as pd
 import skbio
-from gneiss.regression._ols import ols
-from gneiss.regression._mixedlm import mixedlm
 
-from q2_types.feature_table import FeatureTable, Balance
-from q2_types.tree import Hierarchy
-from qiime2.plugin import Str, Metadata
+from q2_types.feature_table import FeatureTable, Balance, Frequency
+from q2_types.tree import Hierarchy, Phylogeny, Rooted
+from qiime2.plugin import Str, Metadata, Float
 from q2_gneiss.plugin_setup import plugin
 from gneiss.plot._regression_plot import ols_summary, lme_summary
+from gneiss.util import match_tips, rename_internal_nodes
+from gneiss.composition import ilr_transform
+from gneiss.regression._ols import ols
+from gneiss.regression._mixedlm import mixedlm
 
 
 def ols_regression(output_dir: str,
@@ -48,6 +50,54 @@ plugin.visualizers.register_function(
                      'covariates of interest.')
     },
     description="Perform linear regression on balances."
+)
+
+
+def phylogenetic_regression(output_dir: str,
+                            table: pd.DataFrame, tree: skbio.TreeNode,
+                            metadata: Metadata, formula: str,
+                            pseudocount: float=1):
+
+    _table, _tree = match_tips(table, tree)
+    # rename internal nodes if they don't exist
+    i, names = 0, []
+    for n in _tree.levelorder():
+        if not n.is_tip():
+            if n.name is None:
+                names.append('y%i' % i)
+                i += 1
+            else:
+                names.append(n.name)
+    _tree = rename_internal_nodes(_tree, names=names)
+    balances = ilr_transform(_table+pseudocount, _tree)
+    ols_regression(output_dir, balances, _tree,
+                   metadata, formula)
+
+
+plugin.visualizers.register_function(
+    function=phylogenetic_regression,
+    inputs={'table': FeatureTable[Frequency],
+            'tree': Phylogeny[Rooted]},
+    parameters={'formula': Str, 'metadata': Metadata,
+                'pseudocount': Float},
+    name='Ordinary Least Squares Regression on Phylogeny',
+    input_descriptions={
+        'table': ('The feature table containing the samples in which '
+                  'simplicial regression will be performed.'),
+        'tree': ('A phylogenetic tree where each tips'
+                 'correspond to the feature identifiers in the table. '
+                 'This tree can contain tip ids that are not present in '
+                 'the table, but all feature ids in the table must be '
+                 'present in this tree.'),
+    },
+    parameter_descriptions={
+        'formula': 'Statistical formula specifying the statistical model.',
+        'metadata': ('Metadata information that contains the '
+                     'covariates of interest.'),
+        'pseudocount': ('The pseudocount to add to avoid taking the '
+                        'logarithm of zero.')
+    },
+    description="Perform simplicial linear regression."
 )
 
 
