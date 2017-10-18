@@ -291,7 +291,6 @@ class TestBalanceTaxonomy(unittest.TestCase):
             self.assertIn('Denominator taxa', html)
             self.assertIn('Proportion', html)
 
-
     def test_balance_taxonomy_continuous(self):
         index_fp = os.path.join(self.results, 'index.html')
         balance_taxonomy(self.results, self.table, self.tree,

@@ -20,7 +20,7 @@ from gneiss.plot._decompose import (balance_barplots, balance_boxplot,
 from gneiss.util import (match, match_tips, NUMERATOR, DENOMINATOR)
 
 from q2_types.tree import Hierarchy
-from q2_types.feature_table import FeatureTable, Composition, Balance
+from q2_types.feature_table import FeatureTable, Composition
 from q2_types.feature_data import FeatureData, Taxonomy
 from qiime2.plugin import Int, MetadataCategory, Str, Choices, Float
 
@@ -73,7 +73,8 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                 np.log(table.loc[:, denom_features.index]).mean(axis=1))
 
     balances = balances * np.sqrt(r * s / (r + s))
-    balances = pd.DataFrame(balances, index=table.index, columns=[balance_name])
+    balances = pd.DataFrame(balances, index=table.index,
+                            columns=[balance_name])
 
     # the actual colors for the numerator and denominator
     num_color = '#105d33'
@@ -156,9 +157,10 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                             num_color=num_color,
                             denom_color=denom_color,
                             axes=(ax_num, ax_denom))
+
             fig3.subplots_adjust(
                 # the left side of the subplots of the figure
-                left= 0.3,
+                left=0.3,
                 # the right side of the subplots of the figure
                 right=0.9,
                 # the bottom of the subplots of the figure
@@ -172,7 +174,6 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                 # between subplots
                 hspace=0.2,
             )
-
 
             fig3.savefig(os.path.join(output_dir, 'proportion_plot.svg'))
             fig3.savefig(os.path.join(output_dir, 'proportion_plot.pdf'))
@@ -220,8 +221,7 @@ plugin.visualizers.register_function(
                 'taxa_level': Int,
                 'metadata': MetadataCategory,
                 'n_features': Int,
-                'threshold': Float,
-    },
+                'threshold': Float},
     input_descriptions={
         'table': 'A table of compositions.',
         'tree': 'The tree used to calculate the balances.',
@@ -233,8 +233,8 @@ plugin.visualizers.register_function(
         'metadata': 'Metadata for plotting the balance (optional).',
         'n_features': 'The number of features to plot in the proportion plot.',
         'threshold': ('A threshold to designate discrete categories '
-                      'for continuous metadata.  If not specified, this threshold '
-                      'will default to the mean.')
+                      'for continuous metadata.  If not specified, '
+                      'this threshold will default to the mean.')
     },
     name='Balance Summary',
     description=("Visualize the distribution of a single balance "
