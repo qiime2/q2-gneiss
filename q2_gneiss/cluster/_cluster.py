@@ -134,7 +134,7 @@ def assign_ids(input_table: pd.DataFrame,
            for i, n in enumerate(t.levelorder(include_self=True))
            if not n.is_tip()]
     t = rename_internal_nodes(t, names=ids)
-    _table, _t = match_tips(input_table, input_tree)
+    _table, _t = match_tips(input_table, t)
     return _table, _t
 
 
@@ -152,7 +152,7 @@ plugin.methods.register_function(
         'input_tree': ('The input tree with potential missing ids.')},
     parameters={},
     output_descriptions={
-        'output_table': ('A table with features matching the tree tips.')},
+        'output_table': ('A table with features matching the tree tips.'),
         'output_tree': ('A tree with uniquely identifying ids.')},
     description=('Assigns UUIDs to uniquely identify internal nodes '
                  'in the tree.  Also corrects for polytomies to create '
