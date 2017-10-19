@@ -62,7 +62,7 @@ plugin.methods.register_function(
 
 def gradient_clustering(table: pd.DataFrame,
                         gradient: MetadataCategory,
-                        weighted=True) -> skbio.TreeNode:
+                        weighted: bool=True) -> skbio.TreeNode:
     """ Builds a tree for features based on a gradient.
 
     Parameters
