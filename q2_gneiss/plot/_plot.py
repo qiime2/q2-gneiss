@@ -27,10 +27,10 @@ from qiime2.plugin import Int, MetadataCategory, Str, Choices, Float
 
 def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                      taxonomy: pd.DataFrame,
-                     balance_name: Str,
-                     taxa_level: Int = 0,
-                     n_features: Int = 10,
-                     threshold: Float = None,
+                     balance_name: str,
+                     taxa_level: int = 0,
+                     n_features: int = 10,
+                     threshold: float = None,
                      metadata: MetadataCategory = None) -> None:
 
     # make sure that the table and tree match up
@@ -266,7 +266,8 @@ _mpl_colormaps = ['viridis', 'inferno', 'plasma', 'magma',
 # Heatmap
 def dendrogram_heatmap(output_dir: str, table: pd.DataFrame,
                        tree: TreeNode, metadata: MetadataCategory,
-                       ndim=10, method='clr', color_map='viridis'):
+                       ndim: int=10, method: str='clr',
+                       color_map: str='viridis'):
 
     table, tree = match_tips(table, tree)
     nodes = [n.name for n in tree.levelorder() if not n.is_tip()]
