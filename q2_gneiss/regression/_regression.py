@@ -15,7 +15,8 @@ from q2_types.tree import Hierarchy
 from qiime2.plugin import Str, Metadata
 from q2_gneiss.plugin_setup import plugin
 from gneiss.plot._regression_plot import ols_summary, lme_summary
-import warning
+import warnings
+import numpy as np
 
 
 def ols_regression(output_dir: str,
