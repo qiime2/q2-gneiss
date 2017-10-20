@@ -22,10 +22,11 @@ import numpy as np
 def ols_regression(output_dir: str,
                    table: pd.DataFrame, tree: skbio.TreeNode,
                    metadata: Metadata, formula: str) -> None:
+
     if np.any(table.var(axis=0) == 0):
         message = ('Detected zero variance balances - '
                    'double check your for unobserved features.')
-        warnings.warn(message, UserWarning, stacklevel=2)
+        raise UserWarning(message)
 
     res = ols(table=table, metadata=metadata._dataframe,
               formula=formula)
@@ -65,7 +66,7 @@ def lme_regression(output_dir: str,
     if np.any(table.var(axis=0) == 0):
         message = ('Detected zero variance balances - '
                    'double check your for unobserved features.')
-        warnings.warn(message, UserWarning, stacklevel=2)
+        raise UserWarning(message)
 
     res = mixedlm(table=table, metadata=metadata._dataframe,
                   formula=formula, groups=groups)

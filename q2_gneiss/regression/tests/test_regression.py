@@ -63,6 +63,20 @@ class TestOLSPlugin(unittest.TestCase):
                                exp_resid.sort_index())
         shutil.rmtree('regression_summary_dir')
 
+    def test_ols_missing_artifact(self):
+        from qiime2.plugins.gneiss.visualizers import ols_regression
+
+        table_f = get_data_path("ols_balances_missing.qza")
+        tree_f = get_data_path("ols_tree.qza")
+        metadata_f = get_data_path("test_ols_metadata.txt")
+
+        in_table = qiime2.Artifact.load(table_f)
+        in_tree = qiime2.Artifact.load(tree_f)
+        in_metadata = qiime2.Metadata(
+            pd.read_table(metadata_f, index_col=0))
+        with self.assertRaises(UserWarning):
+            ols_regression(in_table, in_tree, in_metadata, 'ph')
+
 
 class TestMixedLMPlugin(unittest.TestCase):
 
@@ -90,6 +104,22 @@ class TestMixedLMPlugin(unittest.TestCase):
         self.assertAlmostEqual(res_coef.loc['y0', 'groups RE'],
                                1.105630e+00, places=5)
         shutil.rmtree('regression_summary_dir')
+
+    def test_lme_missing_artifact(self):
+        from qiime2.plugins.gneiss.visualizers import lme_regression
+
+        table_f = get_data_path("lme_balances_missing.qza")
+        tree_f = get_data_path("lme_tree.qza")
+        metadata_f = get_data_path("test_lme_metadata.txt")
+
+        in_table = qiime2.Artifact.load(table_f)
+        in_tree = qiime2.Artifact.load(tree_f)
+        in_metadata = qiime2.Metadata(
+            pd.read_table(metadata_f, index_col=0))
+
+        with self.assertRaises(UserWarning):
+            lme_regression(in_table, in_tree, in_metadata,
+                           'ph', 'host_subject_id')
 
 
 if __name__ == '__main__':
