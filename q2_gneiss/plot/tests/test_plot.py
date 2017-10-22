@@ -202,6 +202,10 @@ class TestBalanceTaxonomy(unittest.TestCase):
             pd.Series(['a', 'a', 'a', 'b', 'b', 'b', 'b'],
                       index=['s1', 's2', 's3', 's4', 's5', 's6', 's7'],
                       name='categorical'))
+        self.multi_categorical = MetadataCategory(
+            pd.Series(['a', 'a', 'c', 'b', 'b', 'b', 'c'],
+                      index=['s1', 's2', 's3', 's4', 's5', 's6', 's7'],
+                      name='multi_categorical'))
         self.continuous = MetadataCategory(
             pd.Series(np.arange(7),
                       index=['s1', 's2', 's3', 's4', 's5', 's6', 's7'],
@@ -290,6 +294,26 @@ class TestBalanceTaxonomy(unittest.TestCase):
             self.assertIn('Numerator taxa', html)
             self.assertIn('Denominator taxa', html)
             self.assertIn('Proportion', html)
+
+    def test_balance_taxonomy_multi_categorical(self):
+        index_fp = os.path.join(self.results, 'index.html')
+        balance_taxonomy(self.results, self.table, self.tree,
+                         self.taxonomy, balance_name='a',
+                         metadata=self.multi_categorical)
+        self.assertTrue(os.path.exists(index_fp))
+        # test to make sure that the numerator file is there
+        num_fp = os.path.join(self.results, 'numerator.csv')
+        self.assertTrue(os.path.exists(num_fp))
+        # test to make sure that the denominator file is there
+        denom_fp = os.path.join(self.results, 'denominator.csv')
+        self.assertTrue(os.path.exists(denom_fp))
+
+        with open(index_fp, 'r') as fh:
+            html = fh.read()
+            self.assertIn('<h1>Balance Taxonomy</h1>', html)
+            self.assertIn('Numerator taxa', html)
+            self.assertIn('Denominator taxa', html)
+            self.assertNotIn('Proportion', html)
 
     def test_balance_taxonomy_continuous(self):
         index_fp = os.path.join(self.results, 'index.html')
