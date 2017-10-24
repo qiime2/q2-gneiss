@@ -119,8 +119,9 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                 else '%s > %f' % (c.name, threshold)
             )
             sample_palette = pd.Series(sns.color_palette("Set2", 2),
-                                       index=dcat.index)
-        except Exception:
+                                       index=dcat.value_counts().index)
+
+        except Exception as e:
             sample_palette = pd.Series(
                 sns.color_palette("Set2", len(c.value_counts())),
                 index=c.value_counts().index)
@@ -151,14 +152,16 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
 
             left_group = dcat.value_counts().index[0]
             right_group = dcat.value_counts().index[1]
-            lidx, ridx = (c == left_group), (c == right_group)
+            print(dcat)
+            print(sample_palette)
+            lidx, ridx = (dcat == left_group), (dcat == right_group)
             if b.loc[lidx].mean() > b.loc[ridx].mean():
                 # double check ordering and switch if necessary
                 # careful - the left group is also commonly associated with
                 # the denominator.
                 left_group = dcat.value_counts().index[1]
                 right_group = dcat.value_counts().index[0]
-                lidx, ridx = (c == left_group), (c == right_group)
+                lidx, ridx = (dcat == left_group), (dcat == right_group)
             # we are not performing a statistical test here
             # we're just trying to figure out a way to sort the data.
             num_fold_change = ctable.loc[:, num_features.index].apply(
@@ -192,9 +195,6 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
             # The below is overriding the default colors in the
             # numerator / denominator this will also need to be fixed in
             # https://github.com/biocore/gneiss/issues/244
-            max_xlim = max(ax_denom.get_xlim()[1], ax_num.get_xlim()[1])
-            min_xlim = max(ax_denom.get_xlim()[0], ax_num.get_xlim()[0])
-
             max_ylim, min_ylim = ax_denom.get_ylim()
             num_h, denom_h = n_features, n_features
 
