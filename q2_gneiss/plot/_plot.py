@@ -161,28 +161,34 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                 lidx, ridx = (c == left_group), (c == right_group)
             # we are not performing a statistical test here
             # we're just trying to figure out a way to sort the data.
-            fold_change = ctable.apply(
+            num_fold_change = ctable.loc[:, num_features.index].apply(
                 lambda x: ttest_ind(x[ridx], x[lidx])[0])
-            fold_change = fold_change.sort_values()
+            num_fold_change = num_fold_change.sort_values()
+
+            denom_fold_change = ctable.loc[:, denom_features.index].apply(
+                lambda x: ttest_ind(x[ridx], x[lidx])[0])
+            denom_fold_change = num_fold_change.sort_values()
 
             metadata = pd.DataFrame({dcat.name: dcat})
-
+            top_num_features = num_fold_change.index[-n_features:]
+            top_denom_features = num_fold_change.index[:n_features]
             fig3, (ax_denom, ax_num) = plt.subplots(1, 2)
-            proportion_plot(table, metadata,
-                            category=metadata.columns[0],
-                            left_group=left_group,
-                            right_group=right_group,
-                            feature_metadata=taxa_df,
-                            label_col=taxa_level,
-                            num_features=fold_change.index[:n_features],
-                            denom_features=fold_change.index[-n_features:],
-                            # Note that the syntax is funky and counter
-                            # intuitive. This will need to be properly
-                            # fixed here
-                            # https://github.com/biocore/gneiss/issues/244
-                            num_color=sample_palette.loc[right_group],
-                            denom_color=sample_palette.loc[left_group],
-                            axes=(ax_num, ax_denom))
+            proportion_plot(
+                table, metadata,
+                category=metadata.columns[0],
+                left_group=left_group,
+                right_group=right_group,
+                feature_metadata=taxa_df,
+                label_col=taxa_level,
+                num_features=top_num_features,
+                denom_features=top_denom_features,
+                # Note that the syntax is funky and counter
+                # intuitive. This will need to be properly
+                # fixed here
+                # https://github.com/biocore/gneiss/issues/244
+                num_color=sample_palette.loc[right_group],
+                denom_color=sample_palette.loc[left_group],
+                axes=(ax_num, ax_denom))
             # The below is overriding the default colors in the
             # numerator / denominator this will also need to be fixed in
             # https://github.com/biocore/gneiss/issues/244
