@@ -152,8 +152,7 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
 
             left_group = dcat.value_counts().index[0]
             right_group = dcat.value_counts().index[1]
-            print(dcat)
-            print(sample_palette)
+
             lidx, ridx = (dcat == left_group), (dcat == right_group)
             if b.loc[lidx].mean() > b.loc[ridx].mean():
                 # double check ordering and switch if necessary
