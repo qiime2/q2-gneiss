@@ -15,11 +15,18 @@ from q2_types.tree import Hierarchy
 from qiime2.plugin import Str, Metadata
 from q2_gneiss.plugin_setup import plugin
 from gneiss.plot._regression_plot import ols_summary, lme_summary
+import numpy as np
 
 
 def ols_regression(output_dir: str,
                    table: pd.DataFrame, tree: skbio.TreeNode,
                    metadata: Metadata, formula: str) -> None:
+
+    if np.any(table.var(axis=0) == 0):
+        message = ('Detected zero variance balances - '
+                   'double check your for unobserved features.')
+        raise UserWarning(message)
+
     res = ols(table=table, metadata=metadata._dataframe,
               formula=formula)
     res.fit()
@@ -55,6 +62,11 @@ def lme_regression(output_dir: str,
                    table: pd.DataFrame, tree: skbio.TreeNode,
                    metadata: Metadata, formula: str,
                    groups: str) -> None:
+    if np.any(table.var(axis=0) == 0):
+        message = ('Detected zero variance balances - '
+                   'double check your for unobserved features.')
+        raise UserWarning(message)
+
     res = mixedlm(table=table, metadata=metadata._dataframe,
                   formula=formula, groups=groups)
     res.fit()

@@ -15,6 +15,8 @@ import pandas.util.testing as pdt
 from scipy.cluster.hierarchy import ward
 
 from skbio import TreeNode, DistanceMatrix
+from skbio.stats.composition import ilr_inv
+from gneiss.balances import balance_basis
 from q2_gneiss.plot._plot import dendrogram_heatmap, balance_taxonomy
 from qiime2 import MetadataCategory
 
@@ -171,6 +173,7 @@ class TestBalanceTaxonomy(unittest.TestCase):
             index=['a1', 'a2', 'a3', 'a4', 'a5']
         )
         self.tree = TreeNode.read([r'((k, q)d, ((x, y)a, z)b)c;'])
+
         self.taxonomy = pd.DataFrame(
             [['foo;barf;a;b;c;d;e', 1],
              ['foo;bark;f;g;h;i;j', 1],
@@ -188,11 +191,21 @@ class TestBalanceTaxonomy(unittest.TestCase):
             index=['d', 'a', 'b', 'c'],
             columns=['s1', 's2', 's3', 's4', 's5', 's6', 's7']
         ).T
+        basis, _ = balance_basis(self.tree)
+        self.table = pd.DataFrame(
+            ilr_inv(self.balances, basis),
+            columns=['x', 'y', 'z', 'k', 'q'],
+            index=['s1', 's2', 's3', 's4', 's5', 's6', 's7']
+        )
 
         self.categorical = MetadataCategory(
             pd.Series(['a', 'a', 'a', 'b', 'b', 'b', 'b'],
                       index=['s1', 's2', 's3', 's4', 's5', 's6', 's7'],
                       name='categorical'))
+        self.multi_categorical = MetadataCategory(
+            pd.Series(['a', 'a', 'c', 'b', 'b', 'b', 'c'],
+                      index=['s1', 's2', 's3', 's4', 's5', 's6', 's7'],
+                      name='multi_categorical'))
         self.continuous = MetadataCategory(
             pd.Series(np.arange(7),
                       index=['s1', 's2', 's3', 's4', 's5', 's6', 's7'],
@@ -204,7 +217,7 @@ class TestBalanceTaxonomy(unittest.TestCase):
 
     def test_balance_taxonomy(self):
         index_fp = os.path.join(self.results, 'index.html')
-        balance_taxonomy(self.results, self.balances, self.tree,
+        balance_taxonomy(self.results, self.table, self.tree,
                          self.taxonomy, balance_name='c')
         self.assertTrue(os.path.exists(index_fp))
         # test to make sure that the numerator file is there
@@ -239,7 +252,7 @@ class TestBalanceTaxonomy(unittest.TestCase):
 
     def test_balance_taxonomy_tips(self):
         index_fp = os.path.join(self.results, 'index.html')
-        balance_taxonomy(self.results, self.balances, self.tree,
+        balance_taxonomy(self.results, self.table, self.tree,
                          self.taxonomy, balance_name='a')
         self.assertTrue(os.path.exists(index_fp))
         # test to make sure that the numerator file is there
@@ -263,18 +276,76 @@ class TestBalanceTaxonomy(unittest.TestCase):
         pdt.assert_frame_equal(exp, res)
 
     def test_balance_taxonomy_categorical(self):
-        balance_taxonomy(self.results, self.balances, self.tree,
+        index_fp = os.path.join(self.results, 'index.html')
+        balance_taxonomy(self.results, self.table, self.tree,
                          self.taxonomy, balance_name='a',
                          metadata=self.categorical)
+        self.assertTrue(os.path.exists(index_fp))
+        # test to make sure that the numerator file is there
+        num_fp = os.path.join(self.results, 'numerator.csv')
+        self.assertTrue(os.path.exists(num_fp))
+        # test to make sure that the denominator file is there
+        denom_fp = os.path.join(self.results, 'denominator.csv')
+        self.assertTrue(os.path.exists(denom_fp))
+
+        with open(index_fp, 'r') as fh:
+            html = fh.read()
+            self.assertIn('<h1>Balance Taxonomy</h1>', html)
+            self.assertIn('Numerator taxa', html)
+            self.assertIn('Denominator taxa', html)
+            self.assertIn('Proportion', html)
+
+    def test_balance_taxonomy_categorical_error(self):
+        with self.assertRaises(ValueError):
+            balance_taxonomy(self.results, self.table, self.tree,
+                             self.taxonomy, balance_name='a',
+                             metadata=self.categorical,
+                             threshold=100.)
+
+    def test_balance_taxonomy_multi_categorical(self):
+        index_fp = os.path.join(self.results, 'index.html')
+        balance_taxonomy(self.results, self.table, self.tree,
+                         self.taxonomy, balance_name='a',
+                         metadata=self.multi_categorical)
+        self.assertTrue(os.path.exists(index_fp))
+        # test to make sure that the numerator file is there
+        num_fp = os.path.join(self.results, 'numerator.csv')
+        self.assertTrue(os.path.exists(num_fp))
+        # test to make sure that the denominator file is there
+        denom_fp = os.path.join(self.results, 'denominator.csv')
+        self.assertTrue(os.path.exists(denom_fp))
+
+        with open(index_fp, 'r') as fh:
+            html = fh.read()
+            self.assertIn('<h1>Balance Taxonomy</h1>', html)
+            self.assertIn('Numerator taxa', html)
+            self.assertIn('Denominator taxa', html)
+            self.assertNotIn('Proportion', html)
 
     def test_balance_taxonomy_continuous(self):
-        balance_taxonomy(self.results, self.balances, self.tree,
+        index_fp = os.path.join(self.results, 'index.html')
+        balance_taxonomy(self.results, self.table, self.tree,
                          self.taxonomy, balance_name='a',
                          metadata=self.continuous)
 
+        self.assertTrue(os.path.exists(index_fp))
+        # test to make sure that the numerator file is there
+        num_fp = os.path.join(self.results, 'numerator.csv')
+        self.assertTrue(os.path.exists(num_fp))
+        # test to make sure that the denominator file is there
+        denom_fp = os.path.join(self.results, 'denominator.csv')
+        self.assertTrue(os.path.exists(denom_fp))
+
+        with open(index_fp, 'r') as fh:
+            html = fh.read()
+            self.assertIn('<h1>Balance Taxonomy</h1>', html)
+            self.assertIn('Numerator taxa', html)
+            self.assertIn('Denominator taxa', html)
+            self.assertIn('Proportion', html)
+
     def test_balance_taxonomy_genus(self):
         index_fp = os.path.join(self.results, 'index.html')
-        balance_taxonomy(self.results, self.balances, self.tree,
+        balance_taxonomy(self.results, self.table, self.tree,
                          self.taxonomy, balance_name='c',
                          taxa_level=6)
         self.assertTrue(os.path.exists(index_fp))
