@@ -170,14 +170,18 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
             # we're just trying to figure out a way to sort the data.
             num_fold_change = ctable.loc[:, num_features.index].apply(
                 lambda x: ttest_ind(x[ridx], x[lidx])[0])
-            num_fold_change = num_fold_change.sort_values()
+            num_fold_change = num_fold_change.sort_values(
+                ascending=False
+            )
 
             denom_fold_change = ctable.loc[:, denom_features.index].apply(
                 lambda x: ttest_ind(x[ridx], x[lidx])[0])
-            denom_fold_change = num_fold_change.sort_values()
+            denom_fold_change = denom_fold_change.sort_values(
+                ascending=True
+            )
 
             metadata = pd.DataFrame({dcat.name: dcat})
-            top_num_features = num_fold_change.index[-n_features:]
+            top_num_features = num_fold_change.index[:n_features]
             top_denom_features = denom_fold_change.index[:n_features]
 
             fig3, (ax_denom, ax_num) = plt.subplots(1, 2)
