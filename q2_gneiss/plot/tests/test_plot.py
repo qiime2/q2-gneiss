@@ -295,6 +295,14 @@ class TestBalanceTaxonomy(unittest.TestCase):
             self.assertIn('Denominator taxa', html)
             self.assertIn('Proportion', html)
 
+    def test_balance_taxonomy_categorical_error(self):
+        index_fp = os.path.join(self.results, 'index.html')
+        with self.assertRaises(ValueError):
+            balance_taxonomy(self.results, self.table, self.tree,
+                             self.taxonomy, balance_name='a',
+                             metadata=self.categorical,
+                             threshold=100.)
+
     def test_balance_taxonomy_multi_categorical(self):
         index_fp = os.path.join(self.results, 'index.html')
         balance_taxonomy(self.results, self.table, self.tree,

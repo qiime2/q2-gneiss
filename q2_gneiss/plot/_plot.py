@@ -122,6 +122,11 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                                        index=dcat.value_counts().index)
 
         except Exception as e:
+            if threshold is not None:
+                raise ValueError('Categorical data detected. '
+                                 'Only specify a threshold for '
+                                 'numerical valued metadata')
+
             sample_palette = pd.Series(
                 sns.color_palette("Set2", len(c.value_counts())),
                 index=c.value_counts().index)
