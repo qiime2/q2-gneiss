@@ -173,7 +173,8 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
 
             metadata = pd.DataFrame({dcat.name: dcat})
             top_num_features = num_fold_change.index[-n_features:]
-            top_denom_features = num_fold_change.index[:n_features]
+            top_denom_features = denom_fold_change.index[:n_features]
+
             fig3, (ax_denom, ax_num) = plt.subplots(1, 2)
             proportion_plot(
                 table, metadata,
