@@ -9,10 +9,11 @@ import os
 import warnings
 import numpy as np
 import pandas as pd
+import seaborn as sns
 import matplotlib.pyplot as plt
 from skbio import TreeNode
 from skbio.stats.composition import clr, centralize
-
+from scipy.stats import ttest_ind
 from q2_gneiss.plugin_setup import plugin
 from gneiss.plot._heatmap import heatmap
 from gneiss.plot._decompose import (balance_barplots, balance_boxplot,
@@ -69,16 +70,16 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
         denom_features = taxa_df.loc[denom_clade.subset()]
         s = len(list(denom_clade.tips()))
 
-    balances = (np.log(table.loc[:, num_features.index]).mean(axis=1) -
+    b = (np.log(table.loc[:, num_features.index]).mean(axis=1) -
                 np.log(table.loc[:, denom_features.index]).mean(axis=1))
 
-    balances = balances * np.sqrt(r * s / (r + s))
-    balances = pd.DataFrame(balances, index=table.index,
+    b = b * np.sqrt(r * s / (r + s))
+    balances = pd.DataFrame(b, index=table.index,
                             columns=[balance_name])
 
     # the actual colors for the numerator and denominator
-    num_color = '#105d33'
-    denom_color = '#b0d78e'
+    num_color = sns.color_palette("Paired")[0]
+    denom_color = sns.color_palette("Paired")[1]
 
     fig, (ax_num, ax_denom) = plt.subplots(2)
     balance_barplots(tree, balance_name, taxa_level, taxa_df,
@@ -97,6 +98,7 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
     fig.savefig(os.path.join(output_dir, 'barplots.pdf'))
 
     dcat = None
+
     if metadata is not None:
         fig2, ax = plt.subplots()
         c = metadata.to_series()
@@ -116,9 +118,13 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                 if x < threshold
                 else '%s > %f' % (c.name, threshold)
             )
-
-        except:
-            balance_boxplot(balance_name, data, y=c.name, ax=ax)
+            sample_palette = pd.Series(sns.color_palette("Set2", 2),
+                                       index=dcat.index)
+        except Exception:
+            sample_palette = pd.Series(
+                sns.color_palette("Set2", len(c.value_counts())),
+                index=c.value_counts().index)
+            balance_boxplot(balance_name, data, y=c.name, ax=ax, palette=sample_palette)
             if len(c.value_counts()) > 2:
                 warnings.warn(
                     ('More than 2 categories detected.  '
@@ -141,22 +147,69 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
             # first sort by clr values and calculate average fold change
             ctable = pd.DataFrame(clr(centralize(table)),
                                   index=table.index, columns=table.columns)
-            fold_change = ctable.sum(axis=0)
+
+            left_group=dcat.value_counts().index[0]
+            right_group=dcat.value_counts().index[1]
+            lidx, ridx = (c==left_group), (c==right_group)
+            if b.loc[lidx].mean() > b.loc[ridx].mean():
+                # double check ordering and switch if necessary
+                # careful - the left group is also commonly associated with
+                # the denominator.
+                left_group=dcat.value_counts().index[1]
+                right_group=dcat.value_counts().index[0]
+                lidx, ridx = (c==left_group), (c==right_group)
+
+            fold_change = ctable.apply(
+                lambda x: ttest_ind(x[ridx], x[lidx])[0])
             fold_change = fold_change.sort_values()
 
             metadata = pd.DataFrame({dcat.name: dcat})
+
             fig3, (ax_denom, ax_num) = plt.subplots(1, 2)
             proportion_plot(table, metadata,
                             category=metadata.columns[0],
-                            left_group=dcat.value_counts().index[0],
-                            right_group=dcat.value_counts().index[1],
+                            left_group=left_group,
+                            right_group=right_group,
                             feature_metadata=taxa_df,
                             label_col=taxa_level,
-                            num_features=fold_change.index[-n_features:],
-                            denom_features=fold_change.index[:n_features],
-                            num_color=num_color,
-                            denom_color=denom_color,
+                            num_features=fold_change.index[:n_features],
+                            denom_features=fold_change.index[-n_features:],
+                            # Note that the syntax is funky and counter
+                            # intuitive. This will need to be properly
+                            # fixed here
+                            # https://github.com/biocore/gneiss/issues/244
+                            num_color=sample_palette.loc[right_group],
+                            denom_color=sample_palette.loc[left_group],
                             axes=(ax_num, ax_denom))
+            # The below is overriding the default colors in the
+            # numerator / denominator this will also need to be fixed in
+            # https://github.com/biocore/gneiss/issues/244
+            max_xlim = max(ax_denom.get_xlim()[1], ax_num.get_xlim()[1])
+            min_xlim = max(ax_denom.get_xlim()[0], ax_num.get_xlim()[0])
+
+            max_ylim, min_ylim = ax_denom.get_ylim()
+            num_h, denom_h = n_features, n_features
+
+            space = (max_ylim - min_ylim) / (num_h + denom_h)
+            ymid = (max_ylim - min_ylim) * num_h / (num_h + denom_h) - 0.5 * space
+
+            ax_denom.axhspan(min_ylim, ymid,
+                             facecolor=num_color,
+                             # sample_palette.loc[left_group],
+                             zorder=0)
+            ax_denom.axhspan(ymid, max_ylim,
+                             facecolor=denom_color,
+                             #sample_palette.loc[right_group],
+                             zorder=0)
+
+            ax_num.axhspan(min_ylim, ymid,
+                           facecolor=num_color,
+                           #sample_palette.loc[left_group],
+                           zorder=0)
+            ax_num.axhspan(ymid, max_ylim,
+                           facecolor=denom_color,
+                           #sample_palette.loc[right_group],
+                           zorder=0)
 
             fig3.subplots_adjust(
                 # the left side of the subplots of the figure
@@ -191,7 +244,7 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
         if dcat is not None:
             index_f.write('<h1>Proportion Plot </h1>\n')
             index_f.write(('<img src="proportion_plot.svg" '
-                           'alt="proportionss">\n\n'
+                           'alt="proportions">\n\n'
                            '<a href="proportion_plot.pdf">'
                            'Download as PDF</a><br>\n'))
 
