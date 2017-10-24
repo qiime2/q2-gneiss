@@ -296,8 +296,11 @@ plugin.visualizers.register_function(
         'metadata': 'Metadata for plotting the balance (optional).',
         'n_features': 'The number of features to plot in the proportion plot.',
         'threshold': ('A threshold to designate discrete categories '
-                      'for continuous metadata.  If not specified, '
-                      'this threshold will default to the mean.')
+                      'for numerical metadata.  This will split the '
+                      'numerical category into two categories, values below '
+                      'the threshold, and values above the threshold.'
+                      'If not specified, this threshold will '
+                      'default to the mean.')
     },
     name='Balance Summary',
     description=("Visualize the distribution of a single balance "
