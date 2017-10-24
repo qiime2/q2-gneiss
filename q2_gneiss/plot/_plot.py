@@ -71,7 +71,7 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
         s = len(list(denom_clade.tips()))
 
     b = (np.log(table.loc[:, num_features.index]).mean(axis=1) -
-                np.log(table.loc[:, denom_features.index]).mean(axis=1))
+         np.log(table.loc[:, denom_features.index]).mean(axis=1))
 
     b = b * np.sqrt(r * s / (r + s))
     balances = pd.DataFrame(b, index=table.index,
@@ -124,7 +124,8 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
             sample_palette = pd.Series(
                 sns.color_palette("Set2", len(c.value_counts())),
                 index=c.value_counts().index)
-            balance_boxplot(balance_name, data, y=c.name, ax=ax, palette=sample_palette)
+            balance_boxplot(balance_name, data, y=c.name, ax=ax,
+                            palette=sample_palette)
             if len(c.value_counts()) > 2:
                 warnings.warn(
                     ('More than 2 categories detected.  '
@@ -148,17 +149,18 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
             ctable = pd.DataFrame(clr(centralize(table)),
                                   index=table.index, columns=table.columns)
 
-            left_group=dcat.value_counts().index[0]
-            right_group=dcat.value_counts().index[1]
-            lidx, ridx = (c==left_group), (c==right_group)
+            left_group = dcat.value_counts().index[0]
+            right_group = dcat.value_counts().index[1]
+            lidx, ridx = (c == left_group), (c == right_group)
             if b.loc[lidx].mean() > b.loc[ridx].mean():
                 # double check ordering and switch if necessary
                 # careful - the left group is also commonly associated with
                 # the denominator.
-                left_group=dcat.value_counts().index[1]
-                right_group=dcat.value_counts().index[0]
-                lidx, ridx = (c==left_group), (c==right_group)
-
+                left_group = dcat.value_counts().index[1]
+                right_group = dcat.value_counts().index[0]
+                lidx, ridx = (c == left_group), (c == right_group)
+            # we are not performing a statistical test here
+            # we're just trying to figure out a way to sort the data.
             fold_change = ctable.apply(
                 lambda x: ttest_ind(x[ridx], x[lidx])[0])
             fold_change = fold_change.sort_values()
@@ -191,24 +193,21 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
             num_h, denom_h = n_features, n_features
 
             space = (max_ylim - min_ylim) / (num_h + denom_h)
-            ymid = (max_ylim - min_ylim) * num_h / (num_h + denom_h) - 0.5 * space
+            ymid = (max_ylim - min_ylim) * num_h
+            ymid = ymid / (num_h + denom_h) - 0.5 * space
 
             ax_denom.axhspan(min_ylim, ymid,
                              facecolor=num_color,
-                             # sample_palette.loc[left_group],
                              zorder=0)
             ax_denom.axhspan(ymid, max_ylim,
                              facecolor=denom_color,
-                             #sample_palette.loc[right_group],
                              zorder=0)
 
             ax_num.axhspan(min_ylim, ymid,
                            facecolor=num_color,
-                           #sample_palette.loc[left_group],
                            zorder=0)
             ax_num.axhspan(ymid, max_ylim,
                            facecolor=denom_color,
-                           #sample_palette.loc[right_group],
                            zorder=0)
 
             fig3.subplots_adjust(
