@@ -296,7 +296,6 @@ class TestBalanceTaxonomy(unittest.TestCase):
             self.assertIn('Proportion', html)
 
     def test_balance_taxonomy_categorical_error(self):
-        index_fp = os.path.join(self.results, 'index.html')
         with self.assertRaises(ValueError):
             balance_taxonomy(self.results, self.table, self.tree,
                              self.taxonomy, balance_name='a',
