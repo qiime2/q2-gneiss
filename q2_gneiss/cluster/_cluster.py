@@ -83,7 +83,7 @@ def gradient_clustering(table: pd.DataFrame,
     c = gradient.to_series()
     c = c.astype(np.float)
     if not weighted:
-        table = table > 0
+        table = (table > 0).astype(np.float)
     table, c = match(table, c)
     t = gradient_linkage(table, c, method='average')
     mean_g = mean_niche_estimator(table, c)
