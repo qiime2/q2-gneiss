@@ -24,7 +24,7 @@ requirements:
     - scikit-bio
     - numpy
     - statsmodels  # TODO: fix this upstream
-    - pandas
+    - pandas 0.20.3
     - seaborn
     - bokeh
     - biom-format >=2.1.5,<2.2.0
