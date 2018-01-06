@@ -12,8 +12,9 @@ import skbio
 
 from q2_types.feature_table import (FeatureTable, Frequency, RelativeFrequency,
                                     Composition)
+from qiime2 import NumericMetadataColumn
 from q2_types.tree import Hierarchy, Phylogeny, Rooted
-from qiime2.plugin import MetadataCategory, Bool
+from qiime2.plugin import MetadataColumn, Numeric, Bool
 from q2_gneiss.plugin_setup import plugin
 from gneiss.cluster._pba import correlation_linkage, gradient_linkage
 from gneiss.sort import gradient_sort, mean_niche_estimator
@@ -61,7 +62,7 @@ plugin.methods.register_function(
 
 
 def gradient_clustering(table: pd.DataFrame,
-                        gradient: MetadataCategory,
+                        gradient: NumericMetadataColumn,
                         weighted: bool=True) -> skbio.TreeNode:
     """ Builds a tree for features based on a gradient.
 
@@ -69,7 +70,7 @@ def gradient_clustering(table: pd.DataFrame,
     ----------
     table : pd.DataFrame
        Contingency table where rows are samples and columns are features.
-    gradient : qiime2.MetadataCategory
+    gradient : qiime2.NumericMetadataColumn
        Continuous vector of measurements corresponding to samples.
     weighted : bool
        Specifies if abundance or presence/absence information
@@ -81,7 +82,6 @@ def gradient_clustering(table: pd.DataFrame,
        Represents the partitioning of features with respect to the gradient.
     """
     c = gradient.to_series()
-    c = c.astype(np.float)
     if not weighted:
         table = (table > 0).astype(np.float)
     table, c = match(table, c)
@@ -103,7 +103,7 @@ plugin.methods.register_function(
         'table': ('The feature table containing the samples in which '
                   'the columns will be clustered.'),
     },
-    parameters={'gradient': MetadataCategory, 'weighted': Bool},
+    parameters={'gradient': MetadataColumn[Numeric], 'weighted': Bool},
     parameter_descriptions={
         'gradient': ('Contains gradient values to sort the '
                      'features and samples.'),

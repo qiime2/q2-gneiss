@@ -23,7 +23,8 @@ from gneiss.util import (match, match_tips, NUMERATOR, DENOMINATOR)
 from q2_types.tree import Hierarchy
 from q2_types.feature_table import FeatureTable, Composition
 from q2_types.feature_data import FeatureData, Taxonomy
-from qiime2.plugin import Int, MetadataCategory, Str, Choices, Float
+from qiime2.plugin import (Int, MetadataColumn, Numeric, Categorical,
+                           Str, Choices, Float)
 
 
 def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
@@ -400,7 +401,8 @@ plugin.visualizers.register_function(
     function=dendrogram_heatmap,
     inputs={'table': FeatureTable[Composition],
             'tree': Hierarchy},
-    parameters={'metadata': MetadataCategory, 'ndim': Int,
+    parameters={'metadata': MetadataCategory,
+                'ndim': Int,
                 'method': Str % Choices(_transform_methods),
                 'color_map': Str % Choices(_mpl_colormaps)},
     input_descriptions={
@@ -412,7 +414,7 @@ plugin.visualizers.register_function(
                  'the table, but all feature ids in the table must be '
                  'present in this tree.')},
     parameter_descriptions={
-        'metadata': ('Metadata to group the samples. '),
+        'metadata': 'Metadata to group the samples.',
         'ndim': 'Number of dimensions to highlight.',
         'method': ("Specifies how the data should be normalized for display."
                    "Options include 'log' or 'clr' (default='clr')."),
@@ -422,6 +424,6 @@ plugin.visualizers.register_function(
     },
     name='Dendrogram heatmap.',
     description=("Visualize the feature tables as a heatmap. "
-                 "with samples sorted along a specified metadata category "
+                 "with samples sorted along a specified metadata column "
                  "and features clustered together specified by the tree.")
 )

@@ -45,8 +45,7 @@ class TestClusteringPlugin(unittest.TestCase):
         table_f = get_data_path("test_gradient.biom.qza")
         metadata_f = get_data_path("test_metadata.txt")
         in_table = qiime2.Artifact.load(table_f)
-        in_metadata = qiime2.Metadata(
-            pd.read_table(metadata_f, index_col=0))
+        in_metadata = qiime2.Metadata.load(metadata_f)
 
         res = gradient_clustering(in_table, in_metadata.get_category('x'))
         res_clust = res.clustering._view(TreeNode)
@@ -59,8 +58,7 @@ class TestClusteringPlugin(unittest.TestCase):
         table_f = get_data_path("test_gradient.biom.qza")
         metadata_f = get_data_path("test_metadata2.txt")
         in_table = qiime2.Artifact.load(table_f)
-        in_metadata = qiime2.Metadata(
-            pd.read_table(metadata_f, index_col=0))
+        in_metadata = qiime2.Metadata.load(metadata_f)
 
         res = gradient_clustering(in_table, in_metadata.get_category('x'))
         res_clust = res.clustering._view(TreeNode)
@@ -72,8 +70,7 @@ class TestClusteringPlugin(unittest.TestCase):
         table_f = get_data_path("weighted.biom.qza")
         metadata_f = get_data_path("test_metadata.txt")
         in_table = qiime2.Artifact.load(table_f)
-        in_metadata = qiime2.Metadata(
-            pd.read_table(metadata_f, index_col=0))
+        in_metadata = qiime2.Metadata.load(metadata_f)
 
         res_uw = gradient_clustering(in_table, in_metadata.get_category('x'),
                                      weighted=False)
