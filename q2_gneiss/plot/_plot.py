@@ -137,19 +137,22 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                     ('More than 2 categories detected.  '
                      'Proportion plots will not be displayed'),
                     stacklevel=2)
+                multiple_cats = True
             else:
                 dcat = c
+                multiple_cats = False
 
-        if dcat is not None:
-            ylabel = (r"$%s = \ln \frac{%s_{numerator}}"
-                      "{%s_{denominator}}$") % (balance_name,
-                                                balance_name,
-                                                balance_name)
-            ax.set_title(ylabel, rotation=0)
-            ax.set_ylabel('log ratio')
-            fig2.savefig(os.path.join(output_dir, 'balance_metadata.svg'))
-            fig2.savefig(os.path.join(output_dir, 'balance_metadata.pdf'))
 
+        ylabel = (r"$%s = \ln \frac{%s_{numerator}}"
+                  "{%s_{denominator}}$") % (balance_name,
+                                            balance_name,
+                                            balance_name)
+        ax.set_title(ylabel, rotation=0)
+        ax.set_ylabel('log ratio')
+        fig2.savefig(os.path.join(output_dir, 'balance_metadata.svg'))
+        fig2.savefig(os.path.join(output_dir, 'balance_metadata.pdf'))
+
+        if not multiple_cats:
             # Proportion plots
             # first sort by clr values and calculate average fold change
             ctable = pd.DataFrame(clr(centralize(table)),
@@ -255,7 +258,7 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                            '<a href="balance_metadata.pdf">'
                            'Download as PDF</a><br>\n'))
 
-        if dcat is not None:
+        if not multiple_cats:
             index_f.write('<h1>Proportion Plot </h1>\n')
             index_f.write(('<img src="proportion_plot.svg" '
                            'alt="proportions">\n\n'
