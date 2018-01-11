@@ -10,6 +10,7 @@ import qiime2
 import pandas as pd
 from skbio.util import get_data_path
 from skbio import TreeNode
+import pandas.util.testing as pdt
 
 
 class TestClusteringPlugin(unittest.TestCase):
@@ -75,17 +76,43 @@ class TestClusteringPlugin(unittest.TestCase):
     def test_assign_ids(self):
         from qiime2.plugins.gneiss.methods import assign_ids
         tree_f = get_data_path("tree.qza")
+        table_f = get_data_path("tree_table.qza")
         tree = qiime2.Artifact.load(tree_f)
-        out_tree = assign_ids(input_tree=tree)
+        table = qiime2.Artifact.load(table_f)
+        out_tree = assign_ids(input_tree=tree, input_table=table)
         res_t = out_tree.output_tree._view(TreeNode)
         for n in res_t.levelorder(include_self=True):
             self.assertTrue(n.name is not None)
 
+    def test_assign_ids_intersect(self):
+        from qiime2.plugins.gneiss.methods import assign_ids
+        tree_f = get_data_path("tree_extra.qza")
+        table_f = get_data_path("polytomy_table.qza")
+        tree = qiime2.Artifact.load(tree_f)
+        table = qiime2.Artifact.load(table_f)
+        output = assign_ids(input_tree=tree, input_table=table)
+        res_tree = output.output_tree._view(TreeNode)
+        res_table = output.output_table._view(pd.DataFrame)
+        for n in res_tree.levelorder(include_self=True):
+            self.assertTrue(n.name is not None)
+        exp = list('abde')
+        res = [n.name for n in res_tree.tips()]
+        self.assertEqual(exp, res)
+
+        exp = pd.DataFrame({
+            's1': [1.0, 2.0, 4.0, 5.0],
+            's2': [1.0, 5.0, 6.0, 0.0]
+        }, index=['a', 'b', 'd', 'e']).T
+
+        pdt.assert_frame_equal(exp, res_table)
+
     def test_assign_ids_polytomy(self):
         from qiime2.plugins.gneiss.methods import assign_ids
         tree_f = get_data_path("polytomy.qza")
+        table_f = get_data_path("polytomy_table.qza")
         tree = qiime2.Artifact.load(tree_f)
-        out_tree = assign_ids(input_tree=tree)
+        table = qiime2.Artifact.load(table_f)
+        out_tree = assign_ids(input_tree=tree, input_table=table)
         res_t = out_tree.output_tree._view(TreeNode)
         res_nontips = []
         for n in res_t.levelorder(include_self=True):
