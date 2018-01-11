@@ -98,7 +98,7 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
     fig.savefig(os.path.join(output_dir, 'barplots.pdf'))
 
     dcat = None
-
+    multiple_cats = False
     if metadata is not None:
         fig2, ax = plt.subplots()
         c = metadata.to_series()
@@ -120,7 +120,6 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
             )
             sample_palette = pd.Series(sns.color_palette("Set2", 2),
                                        index=dcat.value_counts().index)
-
         except Exception as e:
             if threshold is not None:
                 raise ValueError('Categorical data detected. '

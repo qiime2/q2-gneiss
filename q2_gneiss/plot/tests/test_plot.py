@@ -342,6 +342,8 @@ class TestBalanceTaxonomy(unittest.TestCase):
         self.assertTrue(os.path.exists(denom_fp))
         box_fp = os.path.join(self.results, 'balance_metadata.pdf')
         self.assertTrue(os.path.exists(box_fp))
+        prop_fp = os.path.join(self.results, 'proportion_plot.pdf')
+        self.assertTrue(os.path.exists(prop_fp))
 
         with open(index_fp, 'r') as fh:
             html = fh.read()
