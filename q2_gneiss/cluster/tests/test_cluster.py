@@ -47,7 +47,7 @@ class TestClusteringPlugin(unittest.TestCase):
         in_table = qiime2.Artifact.load(table_f)
         in_metadata = qiime2.Metadata.load(metadata_f)
 
-        res = gradient_clustering(in_table, in_metadata.get_category('x'))
+        res = gradient_clustering(in_table, in_metadata.get_column('x'))
         res_clust = res.clustering._view(TreeNode)
         exp_str = '((o1:0.5,o2:0.5)y1:0.5,(o3:0.5,o4:0.5)y2:0.5)y0;\n'
         self.assertEqual(exp_str, str(res_clust))
@@ -60,7 +60,7 @@ class TestClusteringPlugin(unittest.TestCase):
         in_table = qiime2.Artifact.load(table_f)
         in_metadata = qiime2.Metadata.load(metadata_f)
 
-        res = gradient_clustering(in_table, in_metadata.get_category('x'))
+        res = gradient_clustering(in_table, in_metadata.get_column('x'))
         res_clust = res.clustering._view(TreeNode)
         exp_str = '((o1:0.5,o2:0.5)y1:0.5,(o3:0.5,o4:0.5)y2:0.5)y0;\n'
         self.assertEqual(exp_str, str(res_clust))
@@ -72,9 +72,9 @@ class TestClusteringPlugin(unittest.TestCase):
         in_table = qiime2.Artifact.load(table_f)
         in_metadata = qiime2.Metadata.load(metadata_f)
 
-        res_uw = gradient_clustering(in_table, in_metadata.get_category('x'),
+        res_uw = gradient_clustering(in_table, in_metadata.get_column('x'),
                                      weighted=False)
-        res_w = gradient_clustering(in_table, in_metadata.get_category('x'),
+        res_w = gradient_clustering(in_table, in_metadata.get_column('x'),
                                     weighted=True)
         res_clust_uw = res_uw.clustering._view(TreeNode)
         res_clust_w = res_w.clustering._view(TreeNode)

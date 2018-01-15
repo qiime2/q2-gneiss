@@ -25,8 +25,7 @@ class TestOLSPlugin(unittest.TestCase):
 
         in_table = qiime2.Artifact.load(table_f)
         in_tree = qiime2.Artifact.load(tree_f)
-        in_metadata = qiime2.Metadata(
-            pd.read_table(metadata_f, index_col=0))
+        in_metadata = qiime2.Metadata.load(metadata_f)
 
         viz = ols_regression(in_table, in_tree, in_metadata, 'ph')
         os.mkdir('regression_summary_dir')
@@ -72,8 +71,7 @@ class TestOLSPlugin(unittest.TestCase):
 
         in_table = qiime2.Artifact.load(table_f)
         in_tree = qiime2.Artifact.load(tree_f)
-        in_metadata = qiime2.Metadata(
-            pd.read_table(metadata_f, index_col=0))
+        in_metadata = qiime2.Metadata.load(metadata_f)
         with self.assertRaises(UserWarning):
             ols_regression(in_table, in_tree, in_metadata, 'ph')
 
@@ -89,8 +87,7 @@ class TestMixedLMPlugin(unittest.TestCase):
 
         in_table = qiime2.Artifact.load(table_f)
         in_tree = qiime2.Artifact.load(tree_f)
-        in_metadata = qiime2.Metadata(
-            pd.read_table(metadata_f, index_col=0))
+        in_metadata = qiime2.Metadata.load(metadata_f)
 
         viz = lme_regression(in_table, in_tree, in_metadata,
                              'ph', 'host_subject_id')
@@ -114,8 +111,7 @@ class TestMixedLMPlugin(unittest.TestCase):
 
         in_table = qiime2.Artifact.load(table_f)
         in_tree = qiime2.Artifact.load(tree_f)
-        in_metadata = qiime2.Metadata(
-            pd.read_table(metadata_f, index_col=0))
+        in_metadata = qiime2.Metadata.load(metadata_f)
 
         with self.assertRaises(UserWarning):
             lme_regression(in_table, in_tree, in_metadata,
