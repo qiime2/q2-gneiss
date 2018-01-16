@@ -141,7 +141,6 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                 dcat = c
                 multiple_cats = False
 
-
         ylabel = (r"$%s = \ln \frac{%s_{numerator}}"
                   "{%s_{denominator}}$") % (balance_name,
                                             balance_name,
