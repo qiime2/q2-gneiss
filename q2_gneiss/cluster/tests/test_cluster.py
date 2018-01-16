@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# Copyright (c) 2017, QIIME 2 development team.
+# Copyright (c) 2017-2018, QIIME 2 development team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -11,9 +11,19 @@ import pandas as pd
 from skbio.util import get_data_path
 from skbio import TreeNode
 import pandas.util.testing as pdt
+import numpy.testing as npt
 
 
 class TestClusteringPlugin(unittest.TestCase):
+
+    def assert_tree_almost_equals(self, a, b):
+        for n, m in zip(a.postorder(include_self=True),
+                        b.postorder(include_self=True)):
+            self.assertEqual(n.name, m.name)
+            if n.length is None or m.length is None:
+                self.assertEqual(n.length, m.length)
+            else:
+                npt.assert_almost_equal(n.length, m.length)
 
     def test_proportional_artifact(self):
         from qiime2.plugins.gneiss.methods import correlation_clustering
@@ -27,7 +37,8 @@ class TestClusteringPlugin(unittest.TestCase):
                    'y4:0.0746442599513)y3:0.153975050273)'
                    'y1:0.70266138894,(F3:0.266841737789,F6:0.266841737789)'
                    'y2:0.664543243026)y0;\n')
-        self.assertEqual(exp_str, str(res_clust))
+        exp_tree = TreeNode.read([exp_str])
+        self.assert_tree_almost_equals(exp_tree, res_clust)
 
     def test_gradient_artifact(self):
         from qiime2.plugins.gneiss.methods import gradient_clustering
