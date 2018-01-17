@@ -18,7 +18,7 @@ from skbio import TreeNode, DistanceMatrix
 from skbio.stats.composition import ilr_inv
 from gneiss.balances import balance_basis
 from q2_gneiss.plot._plot import dendrogram_heatmap, balance_taxonomy
-from qiime2 import MetadataCategory
+from qiime2 import CategoricalMetadataColumn, NumericMetadataColumn
 
 
 class TestHeatmap(unittest.TestCase):
@@ -34,7 +34,7 @@ class TestHeatmap(unittest.TestCase):
     def test_visualization(self):
         np.random.seed(0)
         num_otus = 500  # otus
-        index = np.arange(5).astype(np.str)
+        index = pd.Index(np.arange(5).astype(np.str), name='id')
         table = pd.DataFrame(np.random.random((len(index), num_otus)),
                              index=index,
                              columns=np.arange(num_otus).astype(np.str))
@@ -49,8 +49,9 @@ class TestHeatmap(unittest.TestCase):
                 n.name = "y%d" % i
             n.length = np.random.rand()*3
 
-        md = MetadataCategory(
-            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index))
+        md = CategoricalMetadataColumn(
+            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index,
+                      name='column-name'))
 
         dendrogram_heatmap(self.results, table, t, md)
 
@@ -66,7 +67,7 @@ class TestHeatmap(unittest.TestCase):
         # tests the scenario where ndim > number of tips
         np.random.seed(0)
         num_otus = 11  # otus
-        index = np.arange(5).astype(np.str)
+        index = pd.Index(np.arange(5).astype(np.str), name='id')
         table = pd.DataFrame(np.random.random((len(index), num_otus)),
                              index=index,
                              columns=np.arange(num_otus).astype(np.str))
@@ -81,8 +82,9 @@ class TestHeatmap(unittest.TestCase):
                 n.name = "y%d" % i
             n.length = np.random.rand()*3
 
-        md = MetadataCategory(
-            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index))
+        md = CategoricalMetadataColumn(
+            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index,
+                      name='column-name'))
 
         dendrogram_heatmap(self.results, table, t, md)
 
@@ -113,9 +115,10 @@ class TestHeatmap(unittest.TestCase):
                 n.name = "y%d" % i
             n.length = np.random.rand()*3
 
-        md = MetadataCategory(
+        md = CategoricalMetadataColumn(
             pd.Series(['a', 'a', 'a', 'b', 'b', 'foo', 'foo'],
-                      index=np.arange(7).astype(np.str)))
+                      index=pd.Index(np.arange(7).astype(np.str), name='id'),
+                      name='column-name'))
 
         dendrogram_heatmap(self.results, table, t, md)
 
@@ -132,7 +135,7 @@ class TestHeatmap(unittest.TestCase):
         # in the table
         np.random.seed(0)
         num_otus = 11  # otus
-        index = np.arange(5).astype(np.str)
+        index = pd.Index(np.arange(5).astype(np.str), name='id')
         table = pd.DataFrame(np.random.random((len(index), num_otus)),
                              index=index,
                              columns=np.arange(num_otus).astype(np.str))
@@ -147,8 +150,9 @@ class TestHeatmap(unittest.TestCase):
                 n.name = "y%d" % i
             n.length = np.random.rand()*3
 
-        md = MetadataCategory(
-            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index))
+        md = CategoricalMetadataColumn(
+            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index,
+                      name='column-name'))
 
         dendrogram_heatmap(self.results, table, t, md)
 
@@ -198,22 +202,18 @@ class TestBalanceTaxonomy(unittest.TestCase):
             index=['s1', 's2', 's3', 's4', 's5', 's6', 's7']
         )
 
-        self.categorical = MetadataCategory(
+        index = pd.Index(['s1', 's2', 's3', 's4', 's5', 's6', 's7'], name='id')
+        self.categorical = CategoricalMetadataColumn(
             pd.Series(['a', 'a', 'a', 'b', 'b', 'b', 'b'],
-                      index=['s1', 's2', 's3', 's4', 's5', 's6', 's7'],
-                      name='categorical'))
-        self.multi_categorical = MetadataCategory(
+                      index=index, name='categorical'))
+        self.multi_categorical = CategoricalMetadataColumn(
             pd.Series(['a', 'a', 'c', 'b', 'b', 'b', 'c'],
-                      index=['s1', 's2', 's3', 's4', 's5', 's6', 's7'],
-                      name='multi_categorical'))
-        self.continuous = MetadataCategory(
-            pd.Series(np.arange(7),
-                      index=['s1', 's2', 's3', 's4', 's5', 's6', 's7'],
-                      name='continuous'))
+                      index=index, name='multi_categorical'))
+        self.continuous = NumericMetadataColumn(
+            pd.Series(np.arange(7), index=index, name='continuous'))
 
     def tearDown(self):
         shutil.rmtree(self.results)
-        pass
 
     def test_balance_taxonomy(self):
         index_fp = os.path.join(self.results, 'index.html')

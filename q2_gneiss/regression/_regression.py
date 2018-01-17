@@ -24,10 +24,10 @@ def ols_regression(output_dir: str,
 
     if np.any(table.var(axis=0) == 0):
         message = ('Detected zero variance balances - '
-                   'double check your for unobserved features.')
+                   'double check your table for unobserved features.')
         raise UserWarning(message)
 
-    res = ols(table=table, metadata=metadata._dataframe,
+    res = ols(table=table, metadata=metadata.to_dataframe(),
               formula=formula)
     res.fit()
 
@@ -64,10 +64,10 @@ def lme_regression(output_dir: str,
                    groups: str) -> None:
     if np.any(table.var(axis=0) == 0):
         message = ('Detected zero variance balances - '
-                   'double check your for unobserved features.')
+                   'double check your table for unobserved features.')
         raise UserWarning(message)
 
-    res = mixedlm(table=table, metadata=metadata._dataframe,
+    res = mixedlm(table=table, metadata=metadata.to_dataframe(),
                   formula=formula, groups=groups)
     res.fit()
     lme_summary(output_dir, res, tree)
