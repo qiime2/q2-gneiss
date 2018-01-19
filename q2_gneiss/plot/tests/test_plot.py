@@ -202,15 +202,13 @@ class TestBalanceTaxonomy(unittest.TestCase):
             index=['s1', 's2', 's3', 's4', 's5', 's6', 's7']
         )
 
-
         index = pd.Index(['s1', 's2', 's3', 's4', 's5', 's6', 's7'], name='id')
         self.categorical = CategoricalMetadataColumn(
             pd.Series(['a', 'a', 'a', 'b', 'b', 'b', 'b'],
                       index=index, name='categorical'))
         self.multi_categorical = CategoricalMetadataColumn(
             pd.Series(['a', 'a', 'c', 'b', 'b', 'b', 'c'],
-                      index=['s1', 's2', 's3', 's4', 's5', 's6', 's7'],
-                      name='multi_categorical'))
+                      index=index, name='multi_categorical'))
         self.continuous = NumericMetadataColumn(
             pd.Series(np.arange(7), index=index, name='continuous'))
 
@@ -331,7 +329,6 @@ class TestBalanceTaxonomy(unittest.TestCase):
         self.assertTrue(os.path.exists(box_fp))
         prop_fp = os.path.join(self.results, 'proportion_plot.pdf')
         self.assertFalse(os.path.exists(prop_fp))
-
 
         with open(index_fp, 'r') as fh:
             html = fh.read()
