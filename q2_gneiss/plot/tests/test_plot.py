@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# Copyright (c) 2017-2018, QIIME 2 development team.
+# Copyright (c) 2017, QIIME 2 development team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -18,7 +18,7 @@ from skbio import TreeNode, DistanceMatrix
 from skbio.stats.composition import ilr_inv
 from gneiss.balances import balance_basis
 from q2_gneiss.plot._plot import dendrogram_heatmap, balance_taxonomy
-from qiime2 import CategoricalMetadataColumn, NumericMetadataColumn
+from qiime2 import MetadataCategory
 
 
 class TestHeatmap(unittest.TestCase):
@@ -34,7 +34,7 @@ class TestHeatmap(unittest.TestCase):
     def test_visualization(self):
         np.random.seed(0)
         num_otus = 500  # otus
-        index = pd.Index(np.arange(5).astype(np.str), name='id')
+        index = np.arange(5).astype(np.str)
         table = pd.DataFrame(np.random.random((len(index), num_otus)),
                              index=index,
                              columns=np.arange(num_otus).astype(np.str))
@@ -49,9 +49,8 @@ class TestHeatmap(unittest.TestCase):
                 n.name = "y%d" % i
             n.length = np.random.rand()*3
 
-        md = CategoricalMetadataColumn(
-            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index,
-                      name='column-name'))
+        md = MetadataCategory(
+            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index))
 
         dendrogram_heatmap(self.results, table, t, md)
 
@@ -67,7 +66,7 @@ class TestHeatmap(unittest.TestCase):
         # tests the scenario where ndim > number of tips
         np.random.seed(0)
         num_otus = 11  # otus
-        index = pd.Index(np.arange(5).astype(np.str), name='id')
+        index = np.arange(5).astype(np.str)
         table = pd.DataFrame(np.random.random((len(index), num_otus)),
                              index=index,
                              columns=np.arange(num_otus).astype(np.str))
@@ -82,9 +81,8 @@ class TestHeatmap(unittest.TestCase):
                 n.name = "y%d" % i
             n.length = np.random.rand()*3
 
-        md = CategoricalMetadataColumn(
-            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index,
-                      name='column-name'))
+        md = MetadataCategory(
+            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index))
 
         dendrogram_heatmap(self.results, table, t, md)
 
@@ -115,10 +113,9 @@ class TestHeatmap(unittest.TestCase):
                 n.name = "y%d" % i
             n.length = np.random.rand()*3
 
-        md = CategoricalMetadataColumn(
+        md = MetadataCategory(
             pd.Series(['a', 'a', 'a', 'b', 'b', 'foo', 'foo'],
-                      index=pd.Index(np.arange(7).astype(np.str), name='id'),
-                      name='column-name'))
+                      index=np.arange(7).astype(np.str)))
 
         dendrogram_heatmap(self.results, table, t, md)
 
@@ -135,7 +132,7 @@ class TestHeatmap(unittest.TestCase):
         # in the table
         np.random.seed(0)
         num_otus = 11  # otus
-        index = pd.Index(np.arange(5).astype(np.str), name='id')
+        index = np.arange(5).astype(np.str)
         table = pd.DataFrame(np.random.random((len(index), num_otus)),
                              index=index,
                              columns=np.arange(num_otus).astype(np.str))
@@ -150,9 +147,8 @@ class TestHeatmap(unittest.TestCase):
                 n.name = "y%d" % i
             n.length = np.random.rand()*3
 
-        md = CategoricalMetadataColumn(
-            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index,
-                      name='column-name'))
+        md = MetadataCategory(
+            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index))
 
         dendrogram_heatmap(self.results, table, t, md)
 
@@ -202,15 +198,18 @@ class TestBalanceTaxonomy(unittest.TestCase):
             index=['s1', 's2', 's3', 's4', 's5', 's6', 's7']
         )
 
-        index = pd.Index(['s1', 's2', 's3', 's4', 's5', 's6', 's7'], name='id')
-        self.categorical = CategoricalMetadataColumn(
+        self.categorical = MetadataCategory(
             pd.Series(['a', 'a', 'a', 'b', 'b', 'b', 'b'],
-                      index=index, name='categorical'))
-        self.multi_categorical = CategoricalMetadataColumn(
+                      index=['s1', 's2', 's3', 's4', 's5', 's6', 's7'],
+                      name='categorical'))
+        self.multi_categorical = MetadataCategory(
             pd.Series(['a', 'a', 'c', 'b', 'b', 'b', 'c'],
-                      index=index, name='multi_categorical'))
-        self.continuous = NumericMetadataColumn(
-            pd.Series(np.arange(7), index=index, name='continuous'))
+                      index=['s1', 's2', 's3', 's4', 's5', 's6', 's7'],
+                      name='multi_categorical'))
+        self.continuous = MetadataCategory(
+            pd.Series(np.arange(7),
+                      index=['s1', 's2', 's3', 's4', 's5', 's6', 's7'],
+                      name='continuous'))
 
     def tearDown(self):
         shutil.rmtree(self.results)
@@ -287,6 +286,11 @@ class TestBalanceTaxonomy(unittest.TestCase):
         # test to make sure that the denominator file is there
         denom_fp = os.path.join(self.results, 'denominator.csv')
         self.assertTrue(os.path.exists(denom_fp))
+<<<<<<< HEAD
+        box_fp = os.path.join(self.results, 'balance_metadata.pdf')
+        self.assertTrue(os.path.exists(box_fp))
+=======
+>>>>>>> 6cb70ec... ENH: Adding in proportion plots (#17)
 
         with open(index_fp, 'r') as fh:
             html = fh.read()
@@ -314,6 +318,13 @@ class TestBalanceTaxonomy(unittest.TestCase):
         # test to make sure that the denominator file is there
         denom_fp = os.path.join(self.results, 'denominator.csv')
         self.assertTrue(os.path.exists(denom_fp))
+<<<<<<< HEAD
+        box_fp = os.path.join(self.results, 'balance_metadata.pdf')
+        self.assertTrue(os.path.exists(box_fp))
+        prop_fp = os.path.join(self.results, 'proportion_plot.pdf')
+        self.assertFalse(os.path.exists(prop_fp))
+=======
+>>>>>>> 6cb70ec... ENH: Adding in proportion plots (#17)
 
         with open(index_fp, 'r') as fh:
             html = fh.read()
@@ -335,6 +346,11 @@ class TestBalanceTaxonomy(unittest.TestCase):
         # test to make sure that the denominator file is there
         denom_fp = os.path.join(self.results, 'denominator.csv')
         self.assertTrue(os.path.exists(denom_fp))
+<<<<<<< HEAD
+        box_fp = os.path.join(self.results, 'balance_metadata.pdf')
+        self.assertTrue(os.path.exists(box_fp))
+=======
+>>>>>>> 6cb70ec... ENH: Adding in proportion plots (#17)
 
         with open(index_fp, 'r') as fh:
             html = fh.read()
