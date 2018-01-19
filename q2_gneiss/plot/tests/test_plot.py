@@ -286,11 +286,9 @@ class TestBalanceTaxonomy(unittest.TestCase):
         # test to make sure that the denominator file is there
         denom_fp = os.path.join(self.results, 'denominator.csv')
         self.assertTrue(os.path.exists(denom_fp))
-<<<<<<< HEAD
+
         box_fp = os.path.join(self.results, 'balance_metadata.pdf')
         self.assertTrue(os.path.exists(box_fp))
-=======
->>>>>>> 6cb70ec... ENH: Adding in proportion plots (#17)
 
         with open(index_fp, 'r') as fh:
             html = fh.read()
@@ -318,13 +316,12 @@ class TestBalanceTaxonomy(unittest.TestCase):
         # test to make sure that the denominator file is there
         denom_fp = os.path.join(self.results, 'denominator.csv')
         self.assertTrue(os.path.exists(denom_fp))
-<<<<<<< HEAD
+
         box_fp = os.path.join(self.results, 'balance_metadata.pdf')
         self.assertTrue(os.path.exists(box_fp))
         prop_fp = os.path.join(self.results, 'proportion_plot.pdf')
         self.assertFalse(os.path.exists(prop_fp))
-=======
->>>>>>> 6cb70ec... ENH: Adding in proportion plots (#17)
+
 
         with open(index_fp, 'r') as fh:
             html = fh.read()
@@ -346,11 +343,9 @@ class TestBalanceTaxonomy(unittest.TestCase):
         # test to make sure that the denominator file is there
         denom_fp = os.path.join(self.results, 'denominator.csv')
         self.assertTrue(os.path.exists(denom_fp))
-<<<<<<< HEAD
+
         box_fp = os.path.join(self.results, 'balance_metadata.pdf')
         self.assertTrue(os.path.exists(box_fp))
-=======
->>>>>>> 6cb70ec... ENH: Adding in proportion plots (#17)
 
         with open(index_fp, 'r') as fh:
             html = fh.read()
