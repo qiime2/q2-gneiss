@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# Copyright (c) 2017, QIIME 2 development team.
+# Copyright (c) 2017-2018, QIIME 2 development team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -23,7 +23,9 @@ from gneiss.util import (match, match_tips, NUMERATOR, DENOMINATOR)
 from q2_types.tree import Hierarchy
 from q2_types.feature_table import FeatureTable, Composition
 from q2_types.feature_data import FeatureData, Taxonomy
-from qiime2.plugin import Int, MetadataCategory, Str, Choices, Float
+import qiime2
+from qiime2.plugin import (Int, MetadataColumn, Numeric, Categorical,
+                           Str, Choices, Float)
 
 
 def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
@@ -32,7 +34,11 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                      taxa_level: int = 0,
                      n_features: int = 10,
                      threshold: float = None,
-                     metadata: MetadataCategory = None) -> None:
+                     metadata: qiime2.MetadataColumn = None) -> None:
+    if threshold is not None and isinstance(metadata,
+                                            qiime2.CategoricalMetadataColumn):
+        raise ValueError('Categorical metadata column detected. Only specify '
+                         'a threshold when using a numerical metadata column.')
 
     # make sure that the table and tree match up
     table, tree = match_tips(table, tree)
@@ -107,7 +113,7 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
         y = data[balance_name]
 
         # check if continuous
-        try:
+        if isinstance(metadata, qiime2.NumericMetadataColumn):
             c = c.astype(np.float64)
             ax.scatter(c.values, y)
             ax.set_xlabel(c.name)
@@ -121,7 +127,7 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
             sample_palette = pd.Series(sns.color_palette("Set2", 2),
                                        index=dcat.value_counts().index)
 
-        except Exception as e:
+        elif isinstance(metadata, qiime2.CategoricalMetadataColumn):
             if threshold is not None:
                 raise ValueError('Categorical data detected. '
                                  'Only specify a threshold for '
@@ -134,11 +140,15 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                             palette=sample_palette)
             if len(c.value_counts()) > 2:
                 warnings.warn(
-                    ('More than 2 categories detected.  '
-                     'Proportion plots will not be displayed'),
+                    'More than 2 categories detected in categorical metadata '
+                    'column. Proportion plots will not be displayed',
                     stacklevel=2)
             else:
                 dcat = c
+
+        else:
+            # Some other type of MetadataColumn
+            raise NotImplementedError()
 
         if dcat is not None:
             ylabel = (r"$%s = \ln \frac{%s_{numerator}}"
@@ -286,7 +296,7 @@ plugin.visualizers.register_function(
             'taxonomy': FeatureData[Taxonomy]},
     parameters={'balance_name': Str,
                 'taxa_level': Int,
-                'metadata': MetadataCategory,
+                'metadata': MetadataColumn[Categorical | Numeric],
                 'n_features': Int,
                 'threshold': Float},
     input_descriptions={
@@ -297,7 +307,7 @@ plugin.visualizers.register_function(
     parameter_descriptions={
         'balance_name': 'Name of the balance to summarize.',
         'taxa_level': 'Level of taxonomy to summarize.',
-        'metadata': 'Metadata for plotting the balance (optional).',
+        'metadata': 'Metadata column for plotting the balance (optional).',
         'n_features': 'The number of features to plot in the proportion plot.',
         'threshold': ('A threshold to designate discrete categories '
                       'for numerical metadata.  This will split the '
@@ -335,7 +345,8 @@ _mpl_colormaps = ['viridis', 'inferno', 'plasma', 'magma',
 
 # Heatmap
 def dendrogram_heatmap(output_dir: str, table: pd.DataFrame,
-                       tree: TreeNode, metadata: MetadataCategory,
+                       tree: TreeNode,
+                       metadata: qiime2.CategoricalMetadataColumn,
                        ndim: int=10, method: str='clr',
                        color_map: str='viridis'):
 
@@ -400,7 +411,8 @@ plugin.visualizers.register_function(
     function=dendrogram_heatmap,
     inputs={'table': FeatureTable[Composition],
             'tree': Hierarchy},
-    parameters={'metadata': MetadataCategory, 'ndim': Int,
+    parameters={'metadata': MetadataColumn[Categorical],
+                'ndim': Int,
                 'method': Str % Choices(_transform_methods),
                 'color_map': Str % Choices(_mpl_colormaps)},
     input_descriptions={
@@ -412,7 +424,7 @@ plugin.visualizers.register_function(
                  'the table, but all feature ids in the table must be '
                  'present in this tree.')},
     parameter_descriptions={
-        'metadata': ('Metadata to group the samples. '),
+        'metadata': 'Categorical metadata column to group the samples.',
         'ndim': 'Number of dimensions to highlight.',
         'method': ("Specifies how the data should be normalized for display."
                    "Options include 'log' or 'clr' (default='clr')."),
@@ -421,7 +433,8 @@ plugin.visualizers.register_function(
                       "colormaps_reference.html for more details.")
     },
     name='Dendrogram heatmap.',
-    description=("Visualize the feature tables as a heatmap. "
-                 "with samples sorted along a specified metadata category "
-                 "and features clustered together specified by the tree.")
+    description=("Visualize the feature table as a heatmap, "
+                 "with samples sorted along a specified categorical metadata "
+                 "column and features clustered together specified by the "
+                 "tree.")
 )
