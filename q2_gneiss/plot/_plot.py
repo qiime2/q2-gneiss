@@ -112,7 +112,9 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
         data[c.name] = c
         y = data[balance_name]
 
+        # check if continuous
         if isinstance(metadata, qiime2.NumericMetadataColumn):
+            c = c.astype(np.float64)
             ax.scatter(c.values, y)
             ax.set_xlabel(c.name)
             if threshold is None:
@@ -124,7 +126,13 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
             )
             sample_palette = pd.Series(sns.color_palette("Set2", 2),
                                        index=dcat.value_counts().index)
+
         elif isinstance(metadata, qiime2.CategoricalMetadataColumn):
+            if threshold is not None:
+                raise ValueError('Categorical data detected. '
+                                 'Only specify a threshold for '
+                                 'numerical valued metadata')
+
             sample_palette = pd.Series(
                 sns.color_palette("Set2", len(c.value_counts())),
                 index=c.value_counts().index)
@@ -138,6 +146,7 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                 multiple_cats = True
             else:
                 dcat = c
+
         else:
             # Some other type of MetadataColumn
             raise NotImplementedError()
@@ -302,9 +311,9 @@ plugin.visualizers.register_function(
         'metadata': 'Metadata column for plotting the balance (optional).',
         'n_features': 'The number of features to plot in the proportion plot.',
         'threshold': ('A threshold to designate discrete categories '
-                      'for a numerical metadata column. This will split the '
-                      'numerical column values into two categories, values '
-                      'below the threshold, and values above the threshold. '
+                      'for numerical metadata.  This will split the '
+                      'numerical category into two categories, values below '
+                      'the threshold, and values above the threshold.'
                       'If not specified, this threshold will '
                       'default to the mean.')
     },
