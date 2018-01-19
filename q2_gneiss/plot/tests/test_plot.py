@@ -212,7 +212,6 @@ class TestBalanceTaxonomy(unittest.TestCase):
         self.continuous = NumericMetadataColumn(
             pd.Series(np.arange(7), index=index, name='continuous'))
 
-
     def tearDown(self):
         shutil.rmtree(self.results)
 
