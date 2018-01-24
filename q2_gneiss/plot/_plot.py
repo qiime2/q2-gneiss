@@ -114,7 +114,6 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
 
         # check if continuous
         if isinstance(metadata, qiime2.NumericMetadataColumn):
-            c = c.astype(np.float64)
             ax.scatter(c.values, y)
             ax.set_xlabel(c.name)
             if threshold is None:
@@ -128,10 +127,6 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                                        index=dcat.value_counts().index)
 
         elif isinstance(metadata, qiime2.CategoricalMetadataColumn):
-            if threshold is not None:
-                raise ValueError('Categorical data detected. '
-                                 'Only specify a threshold for '
-                                 'numerical valued metadata')
 
             sample_palette = pd.Series(
                 sns.color_palette("Set2", len(c.value_counts())),
