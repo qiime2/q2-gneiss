@@ -104,7 +104,7 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
     fig.savefig(os.path.join(output_dir, 'barplots.pdf'))
 
     dcat = None
-
+    multiple_cats = False
     if metadata is not None:
         fig2, ax = plt.subplots()
         c = metadata.to_series()
@@ -112,6 +112,7 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
         data[c.name] = c
         y = data[balance_name]
 
+        # check if continuous
         if isinstance(metadata, qiime2.NumericMetadataColumn):
             ax.scatter(c.values, y)
             ax.set_xlabel(c.name)
@@ -124,7 +125,9 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
             )
             sample_palette = pd.Series(sns.color_palette("Set2", 2),
                                        index=dcat.value_counts().index)
+
         elif isinstance(metadata, qiime2.CategoricalMetadataColumn):
+
             sample_palette = pd.Series(
                 sns.color_palette("Set2", len(c.value_counts())),
                 index=c.value_counts().index)
@@ -135,22 +138,24 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                     'More than 2 categories detected in categorical metadata '
                     'column. Proportion plots will not be displayed',
                     stacklevel=2)
+                multiple_cats = True
             else:
                 dcat = c
+
         else:
             # Some other type of MetadataColumn
             raise NotImplementedError()
 
-        if dcat is not None:
-            ylabel = (r"$%s = \ln \frac{%s_{numerator}}"
-                      "{%s_{denominator}}$") % (balance_name,
-                                                balance_name,
-                                                balance_name)
-            ax.set_title(ylabel, rotation=0)
-            ax.set_ylabel('log ratio')
-            fig2.savefig(os.path.join(output_dir, 'balance_metadata.svg'))
-            fig2.savefig(os.path.join(output_dir, 'balance_metadata.pdf'))
+        ylabel = (r"$%s = \ln \frac{%s_{numerator}}"
+                  "{%s_{denominator}}$") % (balance_name,
+                                            balance_name,
+                                            balance_name)
+        ax.set_title(ylabel, rotation=0)
+        ax.set_ylabel('log ratio')
+        fig2.savefig(os.path.join(output_dir, 'balance_metadata.svg'))
+        fig2.savefig(os.path.join(output_dir, 'balance_metadata.pdf'))
 
+        if not multiple_cats:
             # Proportion plots
             # first sort by clr values and calculate average fold change
             ctable = pd.DataFrame(clr(centralize(table)),
@@ -256,7 +261,7 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                            '<a href="balance_metadata.pdf">'
                            'Download as PDF</a><br>\n'))
 
-        if dcat is not None:
+        if not multiple_cats:
             index_f.write('<h1>Proportion Plot </h1>\n')
             index_f.write(('<img src="proportion_plot.svg" '
                            'alt="proportions">\n\n'
@@ -300,6 +305,7 @@ plugin.visualizers.register_function(
         'taxa_level': 'Level of taxonomy to summarize.',
         'metadata': 'Metadata column for plotting the balance (optional).',
         'n_features': 'The number of features to plot in the proportion plot.',
+
         'threshold': ('A threshold to designate discrete categories '
                       'for a numerical metadata column. This will split the '
                       'numerical column values into two categories, values '
