@@ -49,7 +49,7 @@ plugin.methods.register_function(
                   'the columns will be clustered.')},
     parameters={},
     output_descriptions={
-        'clustering': ('A hierarchy of feature identifiers where each tip'
+        'clustering': ('A hierarchy of feature identifiers where each tip '
                        'corresponds to the feature identifiers in the table. '
                        'This tree can contain tip ids that are not present in '
                        'the table, but all feature ids in the table must be '
@@ -111,7 +111,7 @@ plugin.methods.register_function(
                      'information should be used to perform the clustering.'),
     },
     output_descriptions={
-        'clustering': ('A hierarchy of feature identifiers where each tip'
+        'clustering': ('A hierarchy of feature identifiers where each tip '
                        'corresponds to the feature identifiers in the table. '
                        'This tree can contain tip ids that are not present in '
                        'the table, but all feature ids in the table must be '
