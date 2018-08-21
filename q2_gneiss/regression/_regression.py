@@ -50,11 +50,14 @@ plugin.visualizers.register_function(
                  'present in this tree.')
     },
     parameter_descriptions={
-        'formula': 'Statistical formula specifying the statistical model.',
+        'formula': 'Formula specifying the statistical model. '
+                   'In other words, a list of the metadata categories that '
+                   'will be used in the regression model, sepearted by "+" '
+                   'For more information see https://patsy.readthedocs.io/en/latest/API-reference.html',
         'metadata': ('Metadata information that contains the '
                      'covariates of interest.')
     },
-    description="Perform linear regression on balances."
+    description="Perform linear regression on balances. This will tell how much variability is explained by metadata categories in your formula."
 )
 
 
@@ -90,7 +93,10 @@ plugin.visualizers.register_function(
                  'present in this tree.')
     },
     parameter_descriptions={
-        'formula': 'Statistical formula specifying the statistical model.',
+        'formula': 'Statistical formula specifying the statistical model.'
+                   'In other words, a list of the metadata categories that '
+                   'will be used in the linear mixed effect model, sepearted by "+" '
+                   'For more information see https://patsy.readthedocs.io/en/latest/API-reference.html',
         'metadata': ('Metadata information that contains the '
                      'covariates of interest.')
     },
