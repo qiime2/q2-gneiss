@@ -58,7 +58,7 @@ plugin.visualizers.register_function(
         'metadata': ('Metadata information that contains the '
                      'covariates of interest.')
     },
-    description=("Perform linear regression on balances. This will tell "
+    description=("Perform linear regression on balances. This will tell you"
                  "how much variability is explained by metadata categories in your formula.")
 )
 
@@ -102,5 +102,6 @@ plugin.visualizers.register_function(
         'metadata': ('Metadata information that contains the '
                      'covariates of interest.')
     },
-    description="Build and run linear mixed effects model on balances. Use LME over OLS when you have repeated measurements (timeseries)."
+    description="Build and run linear mixed effects model on balances."
+                "Use LME over OLS when you have repeated measurements (timeseries)."
 )
