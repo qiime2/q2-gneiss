@@ -5,29 +5,13 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
-import pandas as pd
-import skbio
 from q2_types.tree import Hierarchy, Phylogeny, Rooted
 from q2_gneiss.plugin_setup import plugin
 from q2_types.feature_table import (FeatureTable, Frequency, Composition,
                                     Balance)
 from q2_gneiss.composition._impute import add_pseudocount
-from gneiss.composition import ilr_transform
-from gneiss.util import rename_internal_nodes
+from q2_gneiss.composition._method import ilr_hierarchical, ilr_phylogenetic
 from qiime2.plugin import Int
-
-
-def ilr_hierarchical(table: pd.DataFrame, tree: skbio.TreeNode) -> (
-                     pd.DataFrame):
-    return ilr_transform(table, tree)
-
-
-def ilr_phylogenetic(table: pd.DataFrame, tree: skbio.TreeNode) -> (
-                     pd.DataFrame, skbio.TreeNode):
-    t = tree.copy()
-    t.bifurcate()
-    t = rename_internal_nodes(t)
-    return ilr_transform(table, t), t
 
 
 plugin.methods.register_function(
