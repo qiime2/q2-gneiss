@@ -63,7 +63,7 @@ plugin.methods.register_function(
     inputs={'table': FeatureTable[Composition],
             'tree': Phylogeny[Rooted]},
     outputs=[('balances', FeatureTable[Balance]),
-             ('tree', Phylogeny[Rooted])],
+             ('hierarchy', Hierarchy)],
     parameters={},
     name='Isometric Log-ratio Transform',
     input_descriptions={
