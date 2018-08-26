@@ -37,6 +37,16 @@ class TestAddPseudocount(unittest.TestCase):
             columns=['a', 'b', 'c'], index=[1, 2, 3])
         pdt.assert_frame_equal(obs, exp)
 
+    def test_add_pseudocount_3(self):
+        table = pd.DataFrame(
+            [[1.7, 1.3, 0.5], [1.5, 3.2, 1.1]],
+            columns=['a', 'b', 'c'], index=[1, 2])
+        obs = add_pseudocount(table, 2.0)
+        exp = pd.DataFrame(
+            [[1.7, 1.3, 0.5], [1.5, 3.2, 1.1]],
+            columns=['a', 'b', 'c'], index=[1, 2])
+        pdt.assert_frame_equal(obs, exp)
+
 
 class TestILRTransform(unittest.TestCase):
 
