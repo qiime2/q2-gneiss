@@ -6,7 +6,6 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 from ._composition import ilr_hierarchical, ilr_phylogenetic
-from ._impute import add_pseudocount
 
 
-__all__ = ["ilr_hierarchical", "ilr_phylogenetic", "add_pseudocount"]
+__all__ = ["ilr_hierarchical", "ilr_phylogenetic"]

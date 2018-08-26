@@ -10,8 +10,32 @@ import numpy as np
 import pandas as pd
 from skbio.tree import TreeNode
 from gneiss.cluster import gradient_linkage
-from q2_gneiss.composition._method import ilr_hierarchical, ilr_phylogenetic
+from q2_gneiss.composition._method import (add_pseudocount, ilr_hierarchical,
+                                           ilr_phylogenetic)
 import pandas.util.testing as pdt
+
+
+class TestAddPseudocount(unittest.TestCase):
+
+    def test_add_pseudocount(self):
+        table = pd.DataFrame(
+            [[1, 2, 3, 4], [1, 0, 2, 1], [0, 2, 1, 3]],
+            columns=['a', 'b', 'c', 'd'], index=[1, 2, 3])
+        obs = add_pseudocount(table)
+        exp = pd.DataFrame(
+            [[1, 2, 3, 4], [1, 1, 2, 1], [1, 2, 1, 3]],
+            columns=['a', 'b', 'c', 'd'], index=[1, 2, 3])
+        pdt.assert_frame_equal(obs, exp)
+
+    def test_add_pseudocount_2(self):
+        table = pd.DataFrame(
+            [[1.0, 2.0, 2.5], [0.5, 0.0, 1.0], [0.0, 0.5, 1.0]],
+            columns=['a', 'b', 'c'], index=[1, 2, 3])
+        obs = add_pseudocount(table, 0.5)
+        exp = pd.DataFrame(
+            [[1.0, 2.0, 2.5], [0.5, 0.5, 1.0], [0.5, 0.5, 1.0]],
+            columns=['a', 'b', 'c'], index=[1, 2, 3])
+        pdt.assert_frame_equal(obs, exp)
 
 
 class TestILRTransform(unittest.TestCase):

@@ -9,36 +9,16 @@ from q2_types.tree import Hierarchy, Phylogeny, Rooted
 from q2_gneiss.plugin_setup import plugin
 from q2_types.feature_table import (FeatureTable, Frequency, Composition,
                                     Balance)
-from q2_gneiss.composition._impute import add_pseudocount
 from q2_gneiss.composition._method import ilr_hierarchical, ilr_phylogenetic
-from qiime2.plugin import Int
-
-
-plugin.methods.register_function(
-    function=add_pseudocount,
-    inputs={'table': FeatureTable[Frequency]},
-    parameters={'pseudocount': Int},
-    outputs=[('composition_table', FeatureTable[Composition])],
-    input_descriptions={
-        'table': 'The feature table to which pseudocounts should be added.'
-    },
-    parameter_descriptions={
-        'pseudocount': 'The value to add to all counts in the feature table.'
-    },
-    output_descriptions={
-        'composition_table': 'The resulting feature table.'
-    },
-    name='Add pseudocount to table',
-    description="Increment all counts in table by pseudocount."
-)
+from qiime2.plugin import Float
 
 
 plugin.methods.register_function(
     function=ilr_hierarchical,
-    inputs={'table': FeatureTable[Composition],
+    inputs={'table': FeatureTable[Frequency],
             'tree': Hierarchy},
     outputs=[('balances', FeatureTable[Balance])],
-    parameters={},
+    parameters={'pseudocount': Float},
     name='Isometric Log-ratio Transform',
     input_descriptions={
         'table': ('The feature table containing the samples in which '
@@ -51,7 +31,9 @@ plugin.methods.register_function(
                  'present in this tree.  This assumes that all of the '
                  'internal nodes in the tree have labels.')
     },
-    parameter_descriptions={},
+    parameter_descriptions={
+        'pseudocount': 'The value to add to zero counts in the feature table.'
+    },
     output_descriptions={'balances': ('The resulting balances from the '
                                       'ilr transform.')},
     description="Calculate balances given a hierarchy."
@@ -60,11 +42,11 @@ plugin.methods.register_function(
 
 plugin.methods.register_function(
     function=ilr_phylogenetic,
-    inputs={'table': FeatureTable[Composition],
+    inputs={'table': FeatureTable[Frequency],
             'tree': Phylogeny[Rooted]},
     outputs=[('balances', FeatureTable[Balance]),
              ('tree', Phylogeny[Rooted])],
-    parameters={},
+    parameters={'pseudocount': Float},
     name='Isometric Log-ratio Transform',
     input_descriptions={
         'table': ('The feature table containing the samples in which '
@@ -77,7 +59,9 @@ plugin.methods.register_function(
                  'present in this tree.  This assumes that all of the '
                  'internal nodes in the tree have labels.')
     },
-    parameter_descriptions={},
+    parameter_descriptions={
+        'pseudocount': 'The value to add to zero counts in the feature table.'
+    },
     output_descriptions={'balances': ('The resulting balances from the '
                                       'ilr transform.')},
     description="Calculate balances given a hierarchy."
