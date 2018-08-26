@@ -7,8 +7,7 @@
 # ----------------------------------------------------------------------------
 from q2_types.tree import Hierarchy, Phylogeny, Rooted
 from q2_gneiss.plugin_setup import plugin
-from q2_types.feature_table import (FeatureTable, Frequency, Composition,
-                                    Balance)
+from q2_types.feature_table import FeatureTable, Frequency, Balance
 from q2_gneiss.composition._method import ilr_hierarchical, ilr_phylogenetic
 from qiime2.plugin import Float
 
