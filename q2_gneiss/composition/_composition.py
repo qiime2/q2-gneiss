@@ -45,7 +45,7 @@ plugin.methods.register_function(
     inputs={'table': FeatureTable[Frequency],
             'tree': Phylogeny[Rooted]},
     outputs=[('balances', FeatureTable[Balance]),
-             ('tree', Phylogeny[Rooted])],
+             ('hierarchy', Hierarchy)],
     parameters={'pseudocount': Float},
     name='Isometric Log-ratio Transform',
     input_descriptions={
@@ -66,6 +66,6 @@ plugin.methods.register_function(
     },
     output_descriptions={'balances': ('The resulting balances from the '
                                       'ilr transform.'),
-                         'tree': 'Bifurcated phylogeny'},
+                         'hierarchy': 'Hierarchy from bifurcated phylogeny'},
     description="Calculate balances given a rooted phylogeny."
 )
