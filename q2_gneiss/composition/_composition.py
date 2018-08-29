@@ -18,7 +18,7 @@ plugin.methods.register_function(
             'tree': Hierarchy},
     outputs=[('balances', FeatureTable[Balance])],
     parameters={'pseudocount': Float},
-    name='Isometric Log-ratio Transform',
+    name='Isometric Log-ratio Transform applied to a hierarchical clustering',
     input_descriptions={
         'table': ('The feature table containing the samples in which '
                   'the ilr transform will be performed.'),
@@ -46,7 +46,7 @@ plugin.methods.register_function(
     outputs=[('balances', FeatureTable[Balance]),
              ('hierarchy', Hierarchy)],
     parameters={'pseudocount': Float},
-    name='Isometric Log-ratio Transform',
+    name='Isometric Log-ratio Transform applied to a phylogenetic tree',
     input_descriptions={
         'table': ('The feature table containing the samples in which '
                   'the ilr transform will be performed.'),
