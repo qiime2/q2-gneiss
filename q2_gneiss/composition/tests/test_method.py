@@ -19,11 +19,11 @@ class TestAddPseudocount(unittest.TestCase):
 
     def test_add_pseudocount(self):
         table = pd.DataFrame(
-            [[1, 2, 3, 4], [1, 0, 2, 1], [0, 2, 1, 3]],
+            [[1., 2., 3., 4.], [1., 0., 2., 1.], [0., 2., 1., 3.]],
             columns=['a', 'b', 'c', 'd'], index=[1, 2, 3])
         obs = add_pseudocount(table)
         exp = pd.DataFrame(
-            [[1, 2, 3, 4], [1, 1, 2, 1], [1, 2, 1, 3]],
+            [[1., 2., 3., 4.], [1., 0.5, 2., 1.], [0.5, 2., 1., 3.]],
             columns=['a', 'b', 'c', 'd'], index=[1, 2, 3])
         pdt.assert_frame_equal(obs, exp)
 

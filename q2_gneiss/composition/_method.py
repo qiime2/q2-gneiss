@@ -12,18 +12,18 @@ from gneiss.composition import ilr_transform
 from gneiss.util import rename_internal_nodes
 
 
-def add_pseudocount(table: pd.DataFrame, pseudocount: float=1.0) -> (
+def add_pseudocount(table: pd.DataFrame, pseudocount: float=0.5) -> (
                     pd.DataFrame):
     return table.replace(0, pseudocount)
 
 
 def ilr_hierarchical(table: pd.DataFrame, tree: skbio.TreeNode,
-                     pseudocount: float=1.0) -> pd.DataFrame:
+                     pseudocount: float=0.5) -> pd.DataFrame:
     return ilr_transform(add_pseudocount(table, pseudocount), tree)
 
 
 def ilr_phylogenetic(table: pd.DataFrame, tree: skbio.TreeNode,
-                     pseudocount: float=1.0) -> (
+                     pseudocount: float=0.5) -> (
                      pd.DataFrame, skbio.TreeNode):
     t = tree.copy()
     t.bifurcate()
