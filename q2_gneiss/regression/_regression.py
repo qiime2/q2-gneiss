@@ -52,7 +52,7 @@ plugin.visualizers.register_function(
     parameter_descriptions={
         'formula': 'Formula specifying the statistical model. '
                    'In other words, a list of the metadata categories that '
-                   'will be used in the regression model, 
+                   'will be used in the regression model, '
                    'typically separated by "+". For more information see '
                    'https://patsy.readthedocs.io/en/latest/API-reference.html',
         'metadata': ('Metadata information that contains the '
@@ -87,7 +87,7 @@ plugin.visualizers.register_function(
     name='Simplicial Linear mixed effects regression',
     input_descriptions={
         'table': ('The feature table containing the samples in which '
-                  'simplicial regression with mixed effects'
+                  'simplicial regression with mixed effect '
                   'will be performed.'),
         'tree': ('A hierarchy of feature identifiers where each tip'
                  'corresponds to the feature identifiers in the table. '
