@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# Copyright (c) 2017, QIIME 2 development team.
+# Copyright (c) 2017-2018, QIIME 2 development team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -12,12 +12,13 @@ import skbio
 
 from q2_types.feature_table import (FeatureTable, Frequency, RelativeFrequency,
                                     Composition)
+from qiime2 import NumericMetadataColumn
 from q2_types.tree import Hierarchy, Phylogeny, Rooted
-from qiime2.plugin import MetadataCategory, Bool
+from qiime2.plugin import MetadataColumn, Numeric, Bool
 from q2_gneiss.plugin_setup import plugin
 from gneiss.cluster._pba import correlation_linkage, gradient_linkage
 from gneiss.sort import gradient_sort, mean_niche_estimator
-from gneiss.util import rename_internal_nodes, match
+from gneiss.util import rename_internal_nodes, match, match_tips
 
 
 def correlation_clustering(table: pd.DataFrame) -> skbio.TreeNode:
@@ -48,7 +49,7 @@ plugin.methods.register_function(
                   'the columns will be clustered.')},
     parameters={},
     output_descriptions={
-        'clustering': ('A hierarchy of feature identifiers where each tip'
+        'clustering': ('A hierarchy of feature identifiers where each tip '
                        'corresponds to the feature identifiers in the table. '
                        'This tree can contain tip ids that are not present in '
                        'the table, but all feature ids in the table must be '
@@ -61,15 +62,15 @@ plugin.methods.register_function(
 
 
 def gradient_clustering(table: pd.DataFrame,
-                        gradient: MetadataCategory,
-                        weighted=True) -> skbio.TreeNode:
+                        gradient: NumericMetadataColumn,
+                        weighted: bool=True) -> skbio.TreeNode:
     """ Builds a tree for features based on a gradient.
 
     Parameters
     ----------
     table : pd.DataFrame
        Contingency table where rows are samples and columns are features.
-    gradient : qiime2.MetadataCategory
+    gradient : qiime2.NumericMetadataColumn
        Continuous vector of measurements corresponding to samples.
     weighted : bool
        Specifies if abundance or presence/absence information
@@ -81,9 +82,8 @@ def gradient_clustering(table: pd.DataFrame,
        Represents the partitioning of features with respect to the gradient.
     """
     c = gradient.to_series()
-    c = c.astype(np.float)
     if not weighted:
-        table = table > 0
+        table = (table > 0).astype(np.float)
     table, c = match(table, c)
     t = gradient_linkage(table, c, method='average')
     mean_g = mean_niche_estimator(table, c)
@@ -103,7 +103,7 @@ plugin.methods.register_function(
         'table': ('The feature table containing the samples in which '
                   'the columns will be clustered.'),
     },
-    parameters={'gradient': MetadataCategory, 'weighted': Bool},
+    parameters={'gradient': MetadataColumn[Numeric], 'weighted': Bool},
     parameter_descriptions={
         'gradient': ('Contains gradient values to sort the '
                      'features and samples.'),
@@ -111,7 +111,7 @@ plugin.methods.register_function(
                      'information should be used to perform the clustering.'),
     },
     output_descriptions={
-        'clustering': ('A hierarchy of feature identifiers where each tip'
+        'clustering': ('A hierarchy of feature identifiers where each tip '
                        'corresponds to the feature identifiers in the table. '
                        'This tree can contain tip ids that are not present in '
                        'the table, but all feature ids in the table must be '
@@ -125,7 +125,8 @@ plugin.methods.register_function(
 )
 
 
-def assign_ids(input_tree: skbio.TreeNode) -> skbio.TreeNode:
+def assign_ids(input_table: pd.DataFrame,
+               input_tree: skbio.TreeNode) -> (pd.DataFrame, skbio.TreeNode):
 
     t = input_tree.copy()
     t.bifurcate()
@@ -133,20 +134,28 @@ def assign_ids(input_tree: skbio.TreeNode) -> skbio.TreeNode:
            for i, n in enumerate(t.levelorder(include_self=True))
            if not n.is_tip()]
     t = rename_internal_nodes(t, names=ids)
-    return t
+    _table, _t = match_tips(input_table, t)
+    return _table, _t
 
 
 plugin.methods.register_function(
     function=assign_ids,
-    inputs={'input_tree': Phylogeny[Rooted]},
-    outputs=[('output_tree', Hierarchy)],
-    name='Assigns ids on internal nodes in the tree.',
+    inputs={'input_tree': Phylogeny[Rooted],
+            'input_table': FeatureTable[Frequency]},
+    outputs=[('output_table', FeatureTable[Frequency]),
+             ('output_tree', Hierarchy)],
+    name=('Assigns ids on internal nodes in the tree, '
+          'and makes sure that they are consistent with '
+          'the table columns.'),
     input_descriptions={
+        'input_table': ('The input table of counts.'),
         'input_tree': ('The input tree with potential missing ids.')},
     parameters={},
     output_descriptions={
+        'output_table': ('A table with features matching the tree tips.'),
         'output_tree': ('A tree with uniquely identifying ids.')},
     description=('Assigns UUIDs to uniquely identify internal nodes '
                  'in the tree.  Also corrects for polytomies to create '
-                 'strictly bifurcating trees.')
+                 'strictly bifurcating trees and aligns the table columns '
+                 'with the tree tip names')
 )

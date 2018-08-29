@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# Copyright (c) 2017, QIIME 2 development team.
+# Copyright (c) 2017-2018, QIIME 2 development team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -15,8 +15,10 @@ import pandas.util.testing as pdt
 from scipy.cluster.hierarchy import ward
 
 from skbio import TreeNode, DistanceMatrix
+from skbio.stats.composition import ilr_inv
+from gneiss.balances import balance_basis
 from q2_gneiss.plot._plot import dendrogram_heatmap, balance_taxonomy
-from qiime2 import MetadataCategory
+from qiime2 import CategoricalMetadataColumn, NumericMetadataColumn
 
 
 class TestHeatmap(unittest.TestCase):
@@ -32,7 +34,7 @@ class TestHeatmap(unittest.TestCase):
     def test_visualization(self):
         np.random.seed(0)
         num_otus = 500  # otus
-        index = np.arange(5).astype(np.str)
+        index = pd.Index(np.arange(5).astype(np.str), name='id')
         table = pd.DataFrame(np.random.random((len(index), num_otus)),
                              index=index,
                              columns=np.arange(num_otus).astype(np.str))
@@ -47,8 +49,9 @@ class TestHeatmap(unittest.TestCase):
                 n.name = "y%d" % i
             n.length = np.random.rand()*3
 
-        md = MetadataCategory(
-            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index))
+        md = CategoricalMetadataColumn(
+            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index,
+                      name='column-name'))
 
         dendrogram_heatmap(self.results, table, t, md)
 
@@ -64,7 +67,7 @@ class TestHeatmap(unittest.TestCase):
         # tests the scenario where ndim > number of tips
         np.random.seed(0)
         num_otus = 11  # otus
-        index = np.arange(5).astype(np.str)
+        index = pd.Index(np.arange(5).astype(np.str), name='id')
         table = pd.DataFrame(np.random.random((len(index), num_otus)),
                              index=index,
                              columns=np.arange(num_otus).astype(np.str))
@@ -79,8 +82,9 @@ class TestHeatmap(unittest.TestCase):
                 n.name = "y%d" % i
             n.length = np.random.rand()*3
 
-        md = MetadataCategory(
-            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index))
+        md = CategoricalMetadataColumn(
+            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index,
+                      name='column-name'))
 
         dendrogram_heatmap(self.results, table, t, md)
 
@@ -111,9 +115,10 @@ class TestHeatmap(unittest.TestCase):
                 n.name = "y%d" % i
             n.length = np.random.rand()*3
 
-        md = MetadataCategory(
+        md = CategoricalMetadataColumn(
             pd.Series(['a', 'a', 'a', 'b', 'b', 'foo', 'foo'],
-                      index=np.arange(7).astype(np.str)))
+                      index=pd.Index(np.arange(7).astype(np.str), name='id'),
+                      name='column-name'))
 
         dendrogram_heatmap(self.results, table, t, md)
 
@@ -130,7 +135,7 @@ class TestHeatmap(unittest.TestCase):
         # in the table
         np.random.seed(0)
         num_otus = 11  # otus
-        index = np.arange(5).astype(np.str)
+        index = pd.Index(np.arange(5).astype(np.str), name='id')
         table = pd.DataFrame(np.random.random((len(index), num_otus)),
                              index=index,
                              columns=np.arange(num_otus).astype(np.str))
@@ -145,8 +150,9 @@ class TestHeatmap(unittest.TestCase):
                 n.name = "y%d" % i
             n.length = np.random.rand()*3
 
-        md = MetadataCategory(
-            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index))
+        md = CategoricalMetadataColumn(
+            pd.Series(['a', 'a', 'a', 'b', 'b'], index=index,
+                      name='column-name'))
 
         dendrogram_heatmap(self.results, table, t, md)
 
@@ -171,6 +177,7 @@ class TestBalanceTaxonomy(unittest.TestCase):
             index=['a1', 'a2', 'a3', 'a4', 'a5']
         )
         self.tree = TreeNode.read([r'((k, q)d, ((x, y)a, z)b)c;'])
+
         self.taxonomy = pd.DataFrame(
             [['foo;barf;a;b;c;d;e', 1],
              ['foo;bark;f;g;h;i;j', 1],
@@ -188,23 +195,29 @@ class TestBalanceTaxonomy(unittest.TestCase):
             index=['d', 'a', 'b', 'c'],
             columns=['s1', 's2', 's3', 's4', 's5', 's6', 's7']
         ).T
+        basis, _ = balance_basis(self.tree)
+        self.table = pd.DataFrame(
+            ilr_inv(self.balances, basis),
+            columns=['x', 'y', 'z', 'k', 'q'],
+            index=['s1', 's2', 's3', 's4', 's5', 's6', 's7']
+        )
 
-        self.categorical = MetadataCategory(
+        index = pd.Index(['s1', 's2', 's3', 's4', 's5', 's6', 's7'], name='id')
+        self.categorical = CategoricalMetadataColumn(
             pd.Series(['a', 'a', 'a', 'b', 'b', 'b', 'b'],
-                      index=['s1', 's2', 's3', 's4', 's5', 's6', 's7'],
-                      name='categorical'))
-        self.continuous = MetadataCategory(
-            pd.Series(np.arange(7),
-                      index=['s1', 's2', 's3', 's4', 's5', 's6', 's7'],
-                      name='continuous'))
+                      index=index, name='categorical'))
+        self.multi_categorical = CategoricalMetadataColumn(
+            pd.Series(['a', 'a', 'c', 'b', 'b', 'b', 'c'],
+                      index=index, name='multi_categorical'))
+        self.continuous = NumericMetadataColumn(
+            pd.Series(np.arange(7), index=index, name='continuous'))
 
     def tearDown(self):
         shutil.rmtree(self.results)
-        pass
 
     def test_balance_taxonomy(self):
         index_fp = os.path.join(self.results, 'index.html')
-        balance_taxonomy(self.results, self.balances, self.tree,
+        balance_taxonomy(self.results, self.table, self.tree,
                          self.taxonomy, balance_name='c')
         self.assertTrue(os.path.exists(index_fp))
         # test to make sure that the numerator file is there
@@ -239,7 +252,7 @@ class TestBalanceTaxonomy(unittest.TestCase):
 
     def test_balance_taxonomy_tips(self):
         index_fp = os.path.join(self.results, 'index.html')
-        balance_taxonomy(self.results, self.balances, self.tree,
+        balance_taxonomy(self.results, self.table, self.tree,
                          self.taxonomy, balance_name='a')
         self.assertTrue(os.path.exists(index_fp))
         # test to make sure that the numerator file is there
@@ -263,18 +276,97 @@ class TestBalanceTaxonomy(unittest.TestCase):
         pdt.assert_frame_equal(exp, res)
 
     def test_balance_taxonomy_categorical(self):
-        balance_taxonomy(self.results, self.balances, self.tree,
+        index_fp = os.path.join(self.results, 'index.html')
+        balance_taxonomy(self.results, self.table, self.tree,
                          self.taxonomy, balance_name='a',
                          metadata=self.categorical)
+        self.assertTrue(os.path.exists(index_fp))
+        # test to make sure that the numerator file is there
+        num_fp = os.path.join(self.results, 'numerator.csv')
+        self.assertTrue(os.path.exists(num_fp))
+        # test to make sure that the denominator file is there
+        denom_fp = os.path.join(self.results, 'denominator.csv')
+        self.assertTrue(os.path.exists(denom_fp))
+        box_fp = os.path.join(self.results, 'balance_metadata.pdf')
+        self.assertTrue(os.path.exists(box_fp))
+
+        box_fp = os.path.join(self.results, 'balance_metadata.pdf')
+        self.assertTrue(os.path.exists(box_fp))
+
+        with open(index_fp, 'r') as fh:
+            html = fh.read()
+            self.assertIn('<h1>Balance Taxonomy</h1>', html)
+            self.assertIn('Numerator taxa', html)
+            self.assertIn('Denominator taxa', html)
+            self.assertIn('Proportion', html)
+
+    def test_balance_taxonomy_categorical_error(self):
+        with self.assertRaises(ValueError):
+            balance_taxonomy(self.results, self.table, self.tree,
+                             self.taxonomy, balance_name='a',
+                             metadata=self.categorical,
+                             threshold=100.)
+
+    def test_balance_taxonomy_multi_categorical(self):
+        index_fp = os.path.join(self.results, 'index.html')
+        balance_taxonomy(self.results, self.table, self.tree,
+                         self.taxonomy, balance_name='a',
+                         metadata=self.multi_categorical)
+        self.assertTrue(os.path.exists(index_fp))
+        # test to make sure that the numerator file is there
+        num_fp = os.path.join(self.results, 'numerator.csv')
+        self.assertTrue(os.path.exists(num_fp))
+        # test to make sure that the denominator file is there
+        denom_fp = os.path.join(self.results, 'denominator.csv')
+        self.assertTrue(os.path.exists(denom_fp))
+        box_fp = os.path.join(self.results, 'balance_metadata.pdf')
+        self.assertTrue(os.path.exists(box_fp))
+        prop_fp = os.path.join(self.results, 'proportion_plot.pdf')
+        self.assertFalse(os.path.exists(prop_fp))
+
+        box_fp = os.path.join(self.results, 'balance_metadata.pdf')
+        self.assertTrue(os.path.exists(box_fp))
+        prop_fp = os.path.join(self.results, 'proportion_plot.pdf')
+        self.assertFalse(os.path.exists(prop_fp))
+
+        with open(index_fp, 'r') as fh:
+            html = fh.read()
+            self.assertIn('<h1>Balance Taxonomy</h1>', html)
+            self.assertIn('Numerator taxa', html)
+            self.assertIn('Denominator taxa', html)
+            self.assertNotIn('Proportion', html)
 
     def test_balance_taxonomy_continuous(self):
-        balance_taxonomy(self.results, self.balances, self.tree,
+        index_fp = os.path.join(self.results, 'index.html')
+        balance_taxonomy(self.results, self.table, self.tree,
                          self.taxonomy, balance_name='a',
                          metadata=self.continuous)
 
+        self.assertTrue(os.path.exists(index_fp))
+        # test to make sure that the numerator file is there
+        num_fp = os.path.join(self.results, 'numerator.csv')
+        self.assertTrue(os.path.exists(num_fp))
+        # test to make sure that the denominator file is there
+        denom_fp = os.path.join(self.results, 'denominator.csv')
+        self.assertTrue(os.path.exists(denom_fp))
+        box_fp = os.path.join(self.results, 'balance_metadata.pdf')
+        self.assertTrue(os.path.exists(box_fp))
+        prop_fp = os.path.join(self.results, 'proportion_plot.pdf')
+        self.assertTrue(os.path.exists(prop_fp))
+
+        box_fp = os.path.join(self.results, 'balance_metadata.pdf')
+        self.assertTrue(os.path.exists(box_fp))
+
+        with open(index_fp, 'r') as fh:
+            html = fh.read()
+            self.assertIn('<h1>Balance Taxonomy</h1>', html)
+            self.assertIn('Numerator taxa', html)
+            self.assertIn('Denominator taxa', html)
+            self.assertIn('Proportion', html)
+
     def test_balance_taxonomy_genus(self):
         index_fp = os.path.join(self.results, 'index.html')
-        balance_taxonomy(self.results, self.balances, self.tree,
+        balance_taxonomy(self.results, self.table, self.tree,
                          self.taxonomy, balance_name='c',
                          taxa_level=6)
         self.assertTrue(os.path.exists(index_fp))

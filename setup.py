@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# Copyright (c) 2017, QIIME 2 development team.
+# Copyright (c) 2017-2018, QIIME 2 development team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -23,6 +23,7 @@ setup(
         'qiime2.plugins': ['q2-gneiss=q2_gneiss.plugin_setup:plugin']
     },
     package_data={
+        "q2_gneiss": ['citations.bib'],
         'q2_gneiss.cluster.tests': ['data/*'],
         'q2_gneiss.regression.tests': ['data/*'],
     },

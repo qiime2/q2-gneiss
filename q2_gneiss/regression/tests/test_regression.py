@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# Copyright (c) 2017, QIIME 2 development team.
+# Copyright (c) 2017-2018, QIIME 2 development team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -25,11 +25,11 @@ class TestOLSPlugin(unittest.TestCase):
 
         in_table = qiime2.Artifact.load(table_f)
         in_tree = qiime2.Artifact.load(tree_f)
-        in_metadata = qiime2.Metadata(
-            pd.read_table(metadata_f, index_col=0))
+        in_metadata = qiime2.Metadata.load(metadata_f)
 
         viz = ols_regression(in_table, in_tree, in_metadata, 'ph')
-        os.mkdir('regression_summary_dir')
+        if not os.path.exists('regression_summary_dir'):
+            os.mkdir('regression_summary_dir')
         viz.visualization.export_data('regression_summary_dir')
 
         # check coefficient
@@ -63,6 +63,19 @@ class TestOLSPlugin(unittest.TestCase):
                                exp_resid.sort_index())
         shutil.rmtree('regression_summary_dir')
 
+    def test_ols_missing_artifact(self):
+        from qiime2.plugins.gneiss.visualizers import ols_regression
+
+        table_f = get_data_path("ols_balances_missing.qza")
+        tree_f = get_data_path("ols_tree.qza")
+        metadata_f = get_data_path("test_ols_metadata.txt")
+
+        in_table = qiime2.Artifact.load(table_f)
+        in_tree = qiime2.Artifact.load(tree_f)
+        in_metadata = qiime2.Metadata.load(metadata_f)
+        with self.assertRaises(UserWarning):
+            ols_regression(in_table, in_tree, in_metadata, 'ph')
+
 
 class TestMixedLMPlugin(unittest.TestCase):
 
@@ -75,21 +88,36 @@ class TestMixedLMPlugin(unittest.TestCase):
 
         in_table = qiime2.Artifact.load(table_f)
         in_tree = qiime2.Artifact.load(tree_f)
-        in_metadata = qiime2.Metadata(
-            pd.read_table(metadata_f, index_col=0))
+        in_metadata = qiime2.Metadata.load(metadata_f)
 
         viz = lme_regression(in_table, in_tree, in_metadata,
                              'ph', 'host_subject_id')
-        os.mkdir('regression_summary_dir')
+        if not os.path.exists('regression_summary_dir'):
+            os.mkdir('regression_summary_dir')
         viz.visualization.export_data('regression_summary_dir')
 
         res_coef = pd.read_csv(os.path.join('regression_summary_dir',
                                             'coefficients.csv'),
                                index_col=0)
 
-        self.assertAlmostEqual(res_coef.loc['y0', 'groups RE'],
+        self.assertAlmostEqual(res_coef.loc['y0', 'Group Var'],
                                1.105630e+00, places=5)
         shutil.rmtree('regression_summary_dir')
+
+    def test_lme_missing_artifact(self):
+        from qiime2.plugins.gneiss.visualizers import lme_regression
+
+        table_f = get_data_path("lme_balances_missing.qza")
+        tree_f = get_data_path("lme_tree.qza")
+        metadata_f = get_data_path("test_lme_metadata.txt")
+
+        in_table = qiime2.Artifact.load(table_f)
+        in_tree = qiime2.Artifact.load(tree_f)
+        in_metadata = qiime2.Metadata.load(metadata_f)
+
+        with self.assertRaises(UserWarning):
+            lme_regression(in_table, in_tree, in_metadata,
+                           'ph', 'host_subject_id')
 
 
 if __name__ == '__main__':
