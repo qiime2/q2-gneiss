@@ -52,14 +52,15 @@ plugin.visualizers.register_function(
     parameter_descriptions={
         'formula': 'Formula specifying the statistical model. '
                    'In other words, a list of the metadata categories that '
-                   'will be used in the regression model, sepearted by "+" '
-                   'For more information see '
+                   'will be used in the regression model, 
+                   'typically separated by "+". For more information see '
                    'https://patsy.readthedocs.io/en/latest/API-reference.html',
         'metadata': ('Metadata information that contains the '
                      'covariates of interest.')
     },
     description=("Perform linear regression on balances. This will tell you"
-                 "how much variability is explained by metadata categories in your formula.")
+                 "how much variability is explained by metadata "
+                 "categories in your formula.")
 )
 
 
@@ -86,7 +87,7 @@ plugin.visualizers.register_function(
     name='Simplicial Linear mixed effects regression',
     input_descriptions={
         'table': ('The feature table containing the samples in which '
-                  'simplicial regression with mixed effects will be performed'
+                  'simplicial regression with mixed effects'
                   'will be performed.'),
         'tree': ('A hierarchy of feature identifiers where each tip'
                  'corresponds to the feature identifiers in the table. '
@@ -97,11 +98,13 @@ plugin.visualizers.register_function(
     parameter_descriptions={
         'formula': 'Statistical formula specifying the statistical model.'
                    'In other words, a list of the metadata categories that '
-                   'will be used in the linear mixed effect model, sepearted by "+" '
-                   'For more information see https://patsy.readthedocs.io/en/latest/API-reference.html',
+                   'will be used in the linear mixed effect model, '
+                   'typically separated by "+". For more information see '
+                   'https://patsy.readthedocs.io/en/latest/API-reference.html',
         'metadata': ('Metadata information that contains the '
                      'covariates of interest.')
     },
     description="Build and run linear mixed effects model on balances."
-                "Use LME over OLS when you have repeated measurements (timeseries)."
+                "Use LME over OLS when you have repeated measurements "
+                "such as (timeseries)."
 )
