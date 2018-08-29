@@ -89,14 +89,14 @@ plugin.visualizers.register_function(
         'table': ('The feature table containing the samples in which '
                   'simplicial regression with mixed effect '
                   'will be performed.'),
-        'tree': ('A hierarchy of feature identifiers where each tip'
+        'tree': ('A hierarchy of feature identifiers where each tip '
                  'corresponds to the feature identifiers in the table. '
                  'This tree can contain tip ids that are not present in '
                  'the table, but all feature ids in the table must be '
                  'present in this tree.')
     },
     parameter_descriptions={
-        'formula': 'Statistical formula specifying the statistical model.'
+        'formula': 'Statistical formula specifying the statistical model. '
                    'In other words, a list of the metadata categories that '
                    'will be used in the linear mixed effect model, '
                    'typically separated by "+". For more information see '
@@ -104,7 +104,7 @@ plugin.visualizers.register_function(
         'metadata': ('Metadata information that contains the '
                      'covariates of interest.')
     },
-    description="Build and run linear mixed effects model on balances."
+    description="Build and run linear mixed effects model on balances. "
                 "Use LME over OLS when you have repeated measurements "
                 "such as (timeseries)."
 )
