@@ -42,7 +42,7 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                          'a threshold when using a numerical metadata column.')
 
     # make sure that the table and tree match up
-    table, tree = match_tips(table+pseudocount, tree)
+    table, tree = match_tips(table.replace(0, pseudocount), tree)
 
     # parse out headers for taxonomy
     taxa_data = list(taxonomy['Taxon'].apply(lambda x: x.split(';')).values)
@@ -350,7 +350,7 @@ def dendrogram_heatmap(output_dir: str, table: pd.DataFrame,
                        ndim: int=10, method: str='clr',
                        color_map: str='viridis'):
 
-    table, tree = match_tips(table+pseudocount, tree)
+    table, tree = match_tips(table.replace(0, pseudocount), tree)
     nodes = [n.name for n in tree.levelorder() if not n.is_tip()]
 
     nlen = min(ndim, len(nodes))
