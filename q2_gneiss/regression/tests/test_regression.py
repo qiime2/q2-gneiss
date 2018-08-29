@@ -28,7 +28,8 @@ class TestOLSPlugin(unittest.TestCase):
         in_metadata = qiime2.Metadata.load(metadata_f)
 
         viz = ols_regression(in_table, in_tree, in_metadata, 'ph')
-        os.mkdir('regression_summary_dir')
+        if not os.path.exists('regression_summary_dir'):
+            os.mkdir('regression_summary_dir')
         viz.visualization.export_data('regression_summary_dir')
 
         # check coefficient
@@ -91,14 +92,15 @@ class TestMixedLMPlugin(unittest.TestCase):
 
         viz = lme_regression(in_table, in_tree, in_metadata,
                              'ph', 'host_subject_id')
-        os.mkdir('regression_summary_dir')
+        if not os.path.exists('regression_summary_dir'):
+            os.mkdir('regression_summary_dir')
         viz.visualization.export_data('regression_summary_dir')
 
         res_coef = pd.read_csv(os.path.join('regression_summary_dir',
                                             'coefficients.csv'),
                                index_col=0)
 
-        self.assertAlmostEqual(res_coef.loc['y0', 'groups RE'],
+        self.assertAlmostEqual(res_coef.loc['y0', 'Group Var'],
                                1.105630e+00, places=5)
         shutil.rmtree('regression_summary_dir')
 
