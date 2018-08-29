@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# Copyright (c) 2017, QIIME 2 development team.
+# Copyright (c) 2017-2018, QIIME 2 development team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -15,12 +15,19 @@ from q2_types.tree import Hierarchy
 from qiime2.plugin import Str, Metadata
 from q2_gneiss.plugin_setup import plugin
 from gneiss.plot._regression_plot import ols_summary, lme_summary
+import numpy as np
 
 
 def ols_regression(output_dir: str,
                    table: pd.DataFrame, tree: skbio.TreeNode,
                    metadata: Metadata, formula: str) -> None:
-    res = ols(table=table, metadata=metadata._dataframe,
+
+    if np.any(table.var(axis=0) == 0):
+        message = ('Detected zero variance balances - '
+                   'double check your table for unobserved features.')
+        raise UserWarning(message)
+
+    res = ols(table=table, metadata=metadata.to_dataframe(),
               formula=formula)
     res.fit()
 
@@ -43,11 +50,17 @@ plugin.visualizers.register_function(
                  'present in this tree.')
     },
     parameter_descriptions={
-        'formula': 'Statistical formula specifying the statistical model.',
+        'formula': 'Formula specifying the statistical model. '
+                   'In other words, a list of the metadata categories that '
+                   'will be used in the regression model, '
+                   'typically separated by "+". For more information see '
+                   'https://patsy.readthedocs.io/en/latest/API-reference.html',
         'metadata': ('Metadata information that contains the '
                      'covariates of interest.')
     },
-    description="Perform linear regression on balances."
+    description=("Perform linear regression on balances. This will tell you"
+                 "how much variability is explained by metadata "
+                 "categories in your formula.")
 )
 
 
@@ -55,7 +68,12 @@ def lme_regression(output_dir: str,
                    table: pd.DataFrame, tree: skbio.TreeNode,
                    metadata: Metadata, formula: str,
                    groups: str) -> None:
-    res = mixedlm(table=table, metadata=metadata._dataframe,
+    if np.any(table.var(axis=0) == 0):
+        message = ('Detected zero variance balances - '
+                   'double check your table for unobserved features.')
+        raise UserWarning(message)
+
+    res = mixedlm(table=table, metadata=metadata.to_dataframe(),
                   formula=formula, groups=groups)
     res.fit()
     lme_summary(output_dir, res, tree)
@@ -69,7 +87,7 @@ plugin.visualizers.register_function(
     name='Simplicial Linear mixed effects regression',
     input_descriptions={
         'table': ('The feature table containing the samples in which '
-                  'simplicial regression with mixed effects will be performed'
+                  'simplicial regression with mixed effect '
                   'will be performed.'),
         'tree': ('A hierarchy of feature identifiers where each tip'
                  'corresponds to the feature identifiers in the table. '
@@ -78,9 +96,15 @@ plugin.visualizers.register_function(
                  'present in this tree.')
     },
     parameter_descriptions={
-        'formula': 'Statistical formula specifying the statistical model.',
+        'formula': 'Statistical formula specifying the statistical model.'
+                   'In other words, a list of the metadata categories that '
+                   'will be used in the linear mixed effect model, '
+                   'typically separated by "+". For more information see '
+                   'https://patsy.readthedocs.io/en/latest/API-reference.html',
         'metadata': ('Metadata information that contains the '
                      'covariates of interest.')
     },
     description="Build and run linear mixed effects model on balances."
+                "Use LME over OLS when you have repeated measurements "
+                "such as (timeseries)."
 )
