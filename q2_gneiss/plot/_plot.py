@@ -21,7 +21,7 @@ from gneiss.plot._decompose import (balance_barplots, balance_boxplot,
 from gneiss.util import (match, match_tips, NUMERATOR, DENOMINATOR)
 
 from q2_types.tree import Hierarchy
-from q2_types.feature_table import FeatureTable, Composition
+from q2_types.feature_table import FeatureTable, Frequency
 from q2_types.feature_data import FeatureData, Taxonomy
 import qiime2
 from qiime2.plugin import (Int, MetadataColumn, Numeric, Categorical,
@@ -31,6 +31,7 @@ from qiime2.plugin import (Int, MetadataColumn, Numeric, Categorical,
 def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                      taxonomy: pd.DataFrame,
                      balance_name: str,
+                     pseudocount: float = 0.5,
                      taxa_level: int = 0,
                      n_features: int = 10,
                      threshold: float = None,
@@ -41,7 +42,7 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                          'a threshold when using a numerical metadata column.')
 
     # make sure that the table and tree match up
-    table, tree = match_tips(table, tree)
+    table, tree = match_tips(table.replace(0, pseudocount), tree)
 
     # parse out headers for taxonomy
     taxa_data = list(taxonomy['Taxon'].apply(lambda x: x.split(';')).values)
@@ -288,15 +289,16 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
 
 plugin.visualizers.register_function(
     function=balance_taxonomy,
-    inputs={'table': FeatureTable[Composition], 'tree': Hierarchy,
+    inputs={'table': FeatureTable[Frequency], 'tree': Hierarchy,
             'taxonomy': FeatureData[Taxonomy]},
     parameters={'balance_name': Str,
                 'taxa_level': Int,
                 'metadata': MetadataColumn[Categorical | Numeric],
+                'pseudocount': Float,
                 'n_features': Int,
                 'threshold': Float},
     input_descriptions={
-        'table': 'A table of compositions.',
+        'table': 'A table of abundances.',
         'tree': 'The tree used to calculate the balances.',
         'taxonomy': 'Taxonomy information for the OTUs.'
     },
@@ -305,7 +307,7 @@ plugin.visualizers.register_function(
         'taxa_level': 'Level of taxonomy to summarize.',
         'metadata': 'Metadata column for plotting the balance (optional).',
         'n_features': 'The number of features to plot in the proportion plot.',
-
+        'pseudocount': 'The pseudocount to add to avoid division by zero.',
         'threshold': ('A threshold to designate discrete categories '
                       'for a numerical metadata column. This will split the '
                       'numerical column values into two categories, values '
@@ -344,10 +346,11 @@ _mpl_colormaps = ['viridis', 'inferno', 'plasma', 'magma',
 def dendrogram_heatmap(output_dir: str, table: pd.DataFrame,
                        tree: TreeNode,
                        metadata: qiime2.CategoricalMetadataColumn,
+                       pseudocount: float = 0.5,
                        ndim: int=10, method: str='clr',
                        color_map: str='viridis'):
 
-    table, tree = match_tips(table, tree)
+    table, tree = match_tips(table.replace(0, pseudocount), tree)
     nodes = [n.name for n in tree.levelorder() if not n.is_tip()]
 
     nlen = min(ndim, len(nodes))
@@ -406,10 +409,11 @@ def dendrogram_heatmap(output_dir: str, table: pd.DataFrame,
 
 plugin.visualizers.register_function(
     function=dendrogram_heatmap,
-    inputs={'table': FeatureTable[Composition],
+    inputs={'table': FeatureTable[Frequency],
             'tree': Hierarchy},
     parameters={'metadata': MetadataColumn[Categorical],
                 'ndim': Int,
+                'pseudocount': Float,
                 'method': Str % Choices(_transform_methods),
                 'color_map': Str % Choices(_mpl_colormaps)},
     input_descriptions={
@@ -423,6 +427,7 @@ plugin.visualizers.register_function(
     parameter_descriptions={
         'metadata': 'Categorical metadata column to group the samples.',
         'ndim': 'Number of dimensions to highlight.',
+        'pseudocount': 'The pseudocount to add to avoid division by zero.',
         'method': ("Specifies how the data should be normalized for display."
                    "Options include 'log' or 'clr' (default='clr')."),
         'color_map': ("Specifies the color map for plotting the heatmap. "
