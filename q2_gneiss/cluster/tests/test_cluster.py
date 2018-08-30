@@ -27,10 +27,10 @@ class TestClusteringPlugin(unittest.TestCase):
 
     def test_proportional_artifact(self):
         from qiime2.plugins.gneiss.methods import correlation_clustering
-        table_f = get_data_path("test_composition.biom.qza")
+        table_f = get_data_path("feature-table.qza")
         in_table = qiime2.Artifact.load(table_f)
 
-        res = correlation_clustering(in_table)
+        res = correlation_clustering(in_table, pseudocount=0.1)
         res_clust = res.clustering._view(TreeNode)
         exp_str = ('((F4:0.228723591874,(F5:0.074748541601,'
                    '(F1:0.00010428164962,F2:0.00010428164962)'

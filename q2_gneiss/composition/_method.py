@@ -11,10 +11,7 @@ import skbio
 from gneiss.composition import ilr_transform
 from gneiss.util import rename_internal_nodes
 
-
-def add_pseudocount(table: pd.DataFrame, pseudocount: float=0.5) -> (
-                    pd.DataFrame):
-    return table.replace(0, pseudocount)
+from q2_gneiss._util import add_pseudocount
 
 
 def ilr_hierarchical(table: pd.DataFrame, tree: skbio.TreeNode,
