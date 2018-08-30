@@ -14,7 +14,6 @@ import matplotlib.pyplot as plt
 from skbio import TreeNode
 from skbio.stats.composition import clr, centralize
 from scipy.stats import ttest_ind
-from q2_gneiss.plugin_setup import plugin
 from gneiss.plot._heatmap import heatmap
 from gneiss.plot._decompose import (balance_barplots, balance_boxplot,
                                     proportion_plot)
@@ -26,6 +25,9 @@ from q2_types.feature_data import FeatureData, Taxonomy
 import qiime2
 from qiime2.plugin import (Int, MetadataColumn, Numeric, Categorical,
                            Str, Choices, Float)
+
+from q2_gneiss.plugin_setup import plugin
+from q2_gneiss._util import add_pseudocount
 
 
 def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
@@ -42,7 +44,7 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                          'a threshold when using a numerical metadata column.')
 
     # make sure that the table and tree match up
-    table, tree = match_tips(table.replace(0, pseudocount), tree)
+    table, tree = match_tips(add_pseudocount(table, pseudocount), tree)
 
     # parse out headers for taxonomy
     taxa_data = list(taxonomy['Taxon'].apply(lambda x: x.split(';')).values)
@@ -350,7 +352,7 @@ def dendrogram_heatmap(output_dir: str, table: pd.DataFrame,
                        ndim: int=10, method: str='clr',
                        color_map: str='viridis'):
 
-    table, tree = match_tips(table.replace(0, pseudocount), tree)
+    table, tree = match_tips(add_pseudocount(table, pseudocount), tree)
     nodes = [n.name for n in tree.levelorder() if not n.is_tip()]
 
     nlen = min(ndim, len(nodes))

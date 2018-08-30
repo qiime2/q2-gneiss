@@ -10,9 +10,10 @@ import numpy as np
 import pandas as pd
 from skbio.tree import TreeNode
 from gneiss.cluster import gradient_linkage
-from q2_gneiss.composition._method import (add_pseudocount, ilr_hierarchical,
-                                           ilr_phylogenetic)
 import pandas.util.testing as pdt
+
+from q2_gneiss.composition._method import ilr_hierarchical, ilr_phylogenetic
+from q2_gneiss._util import add_pseudocount
 
 
 class TestAddPseudocount(unittest.TestCase):
