@@ -5,7 +5,10 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
-from ._composition import ilr_hierarchical, ilr_phylogenetic
+
+import pandas as pd
 
 
-__all__ = ["ilr_hierarchical", "ilr_phylogenetic"]
+def add_pseudocount(table: pd.DataFrame, pseudocount: float=0.5) -> (
+                    pd.DataFrame):
+    return table.replace(0, pseudocount)

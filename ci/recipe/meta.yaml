@@ -23,7 +23,7 @@ requirements:
     - gneiss >=0.3.0
     - scikit-bio
     - numpy
-    - statsmodels  # TODO: fix this upstream
+    - statsmodels >=0.9.0  # TODO: fix this upstream
     - pandas
     - seaborn
     - bokeh

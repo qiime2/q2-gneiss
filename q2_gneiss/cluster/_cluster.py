@@ -14,14 +14,17 @@ from q2_types.feature_table import (FeatureTable, Frequency, RelativeFrequency,
                                     Composition)
 from qiime2 import NumericMetadataColumn
 from q2_types.tree import Hierarchy, Phylogeny, Rooted
-from qiime2.plugin import MetadataColumn, Numeric, Bool
-from q2_gneiss.plugin_setup import plugin
+from qiime2.plugin import MetadataColumn, Numeric, Bool, Float
 from gneiss.cluster._pba import correlation_linkage, gradient_linkage
 from gneiss.sort import gradient_sort, mean_niche_estimator
 from gneiss.util import rename_internal_nodes, match, match_tips
 
+from q2_gneiss.plugin_setup import plugin
+from q2_gneiss._util import add_pseudocount
 
-def correlation_clustering(table: pd.DataFrame) -> skbio.TreeNode:
+
+def correlation_clustering(table: pd.DataFrame, pseudocount: float=0.5
+                           ) -> skbio.TreeNode:
     """ Builds a tree for features based on correlation.
 
     Parameters
@@ -35,21 +38,24 @@ def correlation_clustering(table: pd.DataFrame) -> skbio.TreeNode:
     skbio.TreeNode
        Represents the partitioning of features with respect to correlation.
     """
-    t = correlation_linkage(table)
+    t = correlation_linkage(add_pseudocount(table, pseudocount))
     return t
 
 
 plugin.methods.register_function(
     function=correlation_clustering,
-    inputs={'table': FeatureTable[Composition]},
+    inputs={'table': FeatureTable[Frequency]},
     outputs=[('clustering', Hierarchy)],
     name='Hierarchical clustering using feature correlation.',
     input_descriptions={
         'table': ('The feature table containing the samples in which '
                   'the columns will be clustered.')},
-    parameters={},
+    parameters={'pseudocount': Float},
+    parameter_descriptions={
+        'pseudocount': 'The value to add to zero counts in the feature table.'
+    },
     output_descriptions={
-        'clustering': ('A hierarchy of feature identifiers where each tip'
+        'clustering': ('A hierarchy of feature identifiers where each tip '
                        'corresponds to the feature identifiers in the table. '
                        'This tree can contain tip ids that are not present in '
                        'the table, but all feature ids in the table must be '
@@ -111,7 +117,7 @@ plugin.methods.register_function(
                      'information should be used to perform the clustering.'),
     },
     output_descriptions={
-        'clustering': ('A hierarchy of feature identifiers where each tip'
+        'clustering': ('A hierarchy of feature identifiers where each tip '
                        'corresponds to the feature identifiers in the table. '
                        'This tree can contain tip ids that are not present in '
                        'the table, but all feature ids in the table must be '

@@ -12,18 +12,13 @@ import qiime2.sdk
 from q2_gneiss import __version__
 
 
-_citation = ('Morton JT, Sanders J, Quinn RA, McDonald D, Gonzalez A, '
-             'Vázquez-Baeza Y Navas-Molina JA, Song SJ, Metcalf JL, '
-             'Hyde ER, Lladser M, Dorrestein PC, Knight R. 2017. '
-             'Balance trees reveal microbial niche differentiation '
-             'mSystems 2:e00162-16. '
-             'https://doi.org/10.1128/mSystems.00162-16.')
+citations = qiime2.plugin.Citations.load('citations.bib', package='q2_gneiss')
 
 plugin = qiime2.plugin.Plugin(
     name='gneiss',
     version=__version__,
     website='https://biocore.github.io/gneiss/',
-    citation_text=_citation,
+    citations=[citations['morton2017balance']],
     short_description=('Plugin for building compositional models.'),
     description=('This is a QIIME 2 plugin supporting statistical models on '
                  'feature tables and metadata using balances.'),
