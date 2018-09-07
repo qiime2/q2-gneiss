@@ -7,14 +7,15 @@
 # ----------------------------------------------------------------------------
 from q2_types.tree import Hierarchy, Phylogeny, Rooted
 from q2_gneiss.plugin_setup import plugin
-from q2_types.feature_table import FeatureTable, Frequency, Balance
+from q2_types.feature_table import (FeatureTable, Frequency,
+                                    Balance, Composition)
 from q2_gneiss.composition._method import ilr_hierarchical, ilr_phylogenetic
 from qiime2.plugin import Float
 
 
 plugin.methods.register_function(
     function=ilr_hierarchical,
-    inputs={'table': FeatureTable[Frequency],
+    inputs={'table': FeatureTable[Frequency | Composition],
             'tree': Hierarchy},
     outputs=[('balances', FeatureTable[Balance])],
     parameters={'pseudocount': Float},
@@ -41,7 +42,7 @@ plugin.methods.register_function(
 
 plugin.methods.register_function(
     function=ilr_phylogenetic,
-    inputs={'table': FeatureTable[Frequency],
+    inputs={'table': FeatureTable[Frequency | Composition],
             'tree': Phylogeny[Rooted]},
     outputs=[('balances', FeatureTable[Balance]),
              ('hierarchy', Hierarchy)],
