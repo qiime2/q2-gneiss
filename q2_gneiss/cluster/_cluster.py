@@ -23,7 +23,7 @@ from q2_gneiss.plugin_setup import plugin
 from q2_gneiss._util import add_pseudocount
 
 
-def correlation_clustering(table: pd.DataFrame, pseudocount: float=0.5
+def correlation_clustering(table: pd.DataFrame, pseudocount: float = 0.5
                            ) -> skbio.TreeNode:
     """ Builds a tree for features based on correlation.
 
@@ -69,7 +69,7 @@ plugin.methods.register_function(
 
 def gradient_clustering(table: pd.DataFrame,
                         gradient: NumericMetadataColumn,
-                        weighted: bool=True) -> skbio.TreeNode:
+                        weighted: bool = True) -> skbio.TreeNode:
     """ Builds a tree for features based on a gradient.
 
     Parameters

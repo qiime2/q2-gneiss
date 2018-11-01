@@ -15,12 +15,12 @@ from q2_gneiss._util import add_pseudocount
 
 
 def ilr_hierarchical(table: pd.DataFrame, tree: skbio.TreeNode,
-                     pseudocount: float=0.5) -> pd.DataFrame:
+                     pseudocount: float = 0.5) -> pd.DataFrame:
     return ilr_transform(add_pseudocount(table, pseudocount), tree)
 
 
 def ilr_phylogenetic(table: pd.DataFrame, tree: skbio.TreeNode,
-                     pseudocount: float=0.5) -> (
+                     pseudocount: float = 0.5) -> (
                      pd.DataFrame, skbio.TreeNode):
     t = tree.copy()
     t.bifurcate()
