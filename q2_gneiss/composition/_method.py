@@ -9,6 +9,7 @@
 import pandas as pd
 import skbio
 from gneiss.composition import ilr_transform
+from gneiss.util import match_tips
 from gneiss.util import rename_internal_nodes
 
 from q2_gneiss._util import add_pseudocount
@@ -24,5 +25,6 @@ def ilr_phylogenetic(table: pd.DataFrame, tree: skbio.TreeNode,
                      pd.DataFrame, skbio.TreeNode):
     t = tree.copy()
     t.bifurcate()
+    table, t = match_tips(table, t)
     t = rename_internal_nodes(t)
     return ilr_transform(add_pseudocount(table, pseudocount), t), t
