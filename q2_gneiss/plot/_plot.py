@@ -349,8 +349,8 @@ def dendrogram_heatmap(output_dir: str, table: pd.DataFrame,
                        tree: TreeNode,
                        metadata: qiime2.CategoricalMetadataColumn,
                        pseudocount: float = 0.5,
-                       ndim: int=10, method: str='clr',
-                       color_map: str='viridis'):
+                       ndim: int = 10, method: str = 'clr',
+                       color_map: str = 'viridis'):
 
     table, tree = match_tips(add_pseudocount(table, pseudocount), tree)
     nodes = [n.name for n in tree.levelorder() if not n.is_tip()]
