@@ -92,7 +92,6 @@ class TestILRTransform(unittest.TestCase):
                         '(b:0.025,a:0.025)y2:0.2)y0;\n')
         self.assertEqual(str(res_tree), exp_tree_str)
 
-
     def test_ilr_phylogenetic_match(self):
         np.random.seed(0)
         table = pd.DataFrame([[1, 1, 2, 2],
