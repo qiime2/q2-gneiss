@@ -209,6 +209,9 @@ class TestBalanceTaxonomy(unittest.TestCase):
         self.multi_categorical = CategoricalMetadataColumn(
             pd.Series(['a', 'a', 'c', 'b', 'b', 'b', 'c'],
                       index=index, name='multi_categorical'))
+        self.numerical_categorical = CategoricalMetadataColumn(
+            pd.Series(['1', '1', '1.0', '2', '2', '2', '2.0'],
+                      index=index, name='numerical_categorical'))
         self.continuous = NumericMetadataColumn(
             pd.Series(np.arange(7), index=index, name='continuous'))
 
@@ -335,6 +338,13 @@ class TestBalanceTaxonomy(unittest.TestCase):
             self.assertIn('Numerator taxa', html)
             self.assertIn('Denominator taxa', html)
             self.assertNotIn('Proportion', html)
+
+    def test_balance_taxonomy_numerical_categorical(self):
+        with self.assertRaisesRegex(ValueError, r".*categorical.*'1', '1.0', "
+                                    "'2', '2.0'"):
+            balance_taxonomy(self.results, self.table, self.tree,
+                             self.taxonomy, balance_name='a',
+                             metadata=self.numerical_categorical)
 
     def test_balance_taxonomy_continuous(self):
         index_fp = os.path.join(self.results, 'index.html')
