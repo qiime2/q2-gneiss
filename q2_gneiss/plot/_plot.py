@@ -134,28 +134,29 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
             sample_palette = pd.Series(
                 sns.color_palette("Set2", len(c.value_counts())),
                 index=c.value_counts().index)
-            try:
-                balance_boxplot(balance_name, data, y=c.name, ax=ax,
-                                palette=sample_palette)
-            except TypeError as e:
-                if 'flexible type' in str(e):
-                    def is_float(category):
-                        try:
-                            float(category)
-                            return True
-                        except ValueError:
-                            return False
-                    categories = data[metadata.name]
-                    inv_categories = list(set(category for category
-                                          in categories if is_float(category)))
-                    inv_categories.sort()
-                    raise ValueError('Your categorical metadata column '
-                                     f'{metadata.name!r} contains the '
-                                     'following invalid categories '
-                                     f'{inv_categories!r}. Note: numerical '
-                                     'categories are not supported.') from e
-                else:
-                    raise e
+
+            def is_float(category):
+                try:
+                    float(category)
+                    return True
+                except ValueError:
+                    return False
+
+            categories = data[metadata.name]
+            inv_categories = [category for category in categories if
+                              is_float(category)]
+            if len(inv_categories) == len(categories):
+                inv_categories = list(set(inv_categories))
+                inv_categories.sort()
+                raise ValueError('Your categorical metadata column '
+                                 f'{metadata.name!r} contains the '
+                                 'following invalid categories '
+                                 f'{inv_categories!r}. Note: At least one '
+                                 'category must be non-numerical.')
+
+            balance_boxplot(balance_name, data, y=c.name, ax=ax,
+                            palette=sample_palette)
+
             if len(c.value_counts()) > 2:
                 warnings.warn(
                     'More than 2 categories detected in categorical metadata '

@@ -209,8 +209,11 @@ class TestBalanceTaxonomy(unittest.TestCase):
         self.multi_categorical = CategoricalMetadataColumn(
             pd.Series(['a', 'a', 'c', 'b', 'b', 'b', 'c'],
                       index=index, name='multi_categorical'))
-        self.numerical_categorical = CategoricalMetadataColumn(
-            pd.Series(['1', '1', '1.0', '2', '2', '2', '2.0'],
+        self.partial_numerical_categorical = CategoricalMetadataColumn(
+            pd.Series(['1', '1', '1', '2', '2', '2', 'a'],
+                      index=index, name='multi_categorical'))
+        self.full_numerical_categorical = CategoricalMetadataColumn(
+            pd.Series(['1', '1', '1.0', '2', '2', '2.0', '3'],
                       index=index, name='numerical_categorical'))
         self.continuous = NumericMetadataColumn(
             pd.Series(np.arange(7), index=index, name='continuous'))
@@ -339,12 +342,41 @@ class TestBalanceTaxonomy(unittest.TestCase):
             self.assertIn('Denominator taxa', html)
             self.assertNotIn('Proportion', html)
 
-    def test_balance_taxonomy_numerical_categorical(self):
+    def test_balance_taxonomy_partial_numerical_categorical(self):
+        index_fp = os.path.join(self.results, 'index.html')
+        balance_taxonomy(self.results, self.table, self.tree,
+                         self.taxonomy, balance_name='a',
+                         metadata=self.partial_numerical_categorical)
+        self.assertTrue(os.path.exists(index_fp))
+        # test to make sure that the numerator file is there
+        num_fp = os.path.join(self.results, 'numerator.csv')
+        self.assertTrue(os.path.exists(num_fp))
+        # test to make sure that the denominator file is there
+        denom_fp = os.path.join(self.results, 'denominator.csv')
+        self.assertTrue(os.path.exists(denom_fp))
+        box_fp = os.path.join(self.results, 'balance_metadata.pdf')
+        self.assertTrue(os.path.exists(box_fp))
+        prop_fp = os.path.join(self.results, 'proportion_plot.pdf')
+        self.assertFalse(os.path.exists(prop_fp))
+
+        box_fp = os.path.join(self.results, 'balance_metadata.pdf')
+        self.assertTrue(os.path.exists(box_fp))
+        prop_fp = os.path.join(self.results, 'proportion_plot.pdf')
+        self.assertFalse(os.path.exists(prop_fp))
+
+        with open(index_fp, 'r') as fh:
+            html = fh.read()
+            self.assertIn('<h1>Balance Taxonomy</h1>', html)
+            self.assertIn('Numerator taxa', html)
+            self.assertIn('Denominator taxa', html)
+            self.assertNotIn('Proportion', html)
+
+    def test_balance_taxonomy_full_numerical_categorical(self):
         with self.assertRaisesRegex(ValueError, r".*categorical.*'1', '1.0', "
-                                    "'2', '2.0'"):
+                                                "'2', '2.0', '3'"):
             balance_taxonomy(self.results, self.table, self.tree,
                              self.taxonomy, balance_name='a',
-                             metadata=self.numerical_categorical)
+                             metadata=self.full_numerical_categorical)
 
     def test_balance_taxonomy_continuous(self):
         index_fp = os.path.join(self.results, 'index.html')
