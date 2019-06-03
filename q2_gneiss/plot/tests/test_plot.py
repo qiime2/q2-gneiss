@@ -347,32 +347,23 @@ class TestBalanceTaxonomy(unittest.TestCase):
         balance_taxonomy(self.results, self.table, self.tree,
                          self.taxonomy, balance_name='a',
                          metadata=self.partial_numerical_categorical)
-        self.assertTrue(os.path.exists(index_fp))
-        # test to make sure that the numerator file is there
-        num_fp = os.path.join(self.results, 'numerator.csv')
-        self.assertTrue(os.path.exists(num_fp))
-        # test to make sure that the denominator file is there
-        denom_fp = os.path.join(self.results, 'denominator.csv')
-        self.assertTrue(os.path.exists(denom_fp))
-        box_fp = os.path.join(self.results, 'balance_metadata.pdf')
-        self.assertTrue(os.path.exists(box_fp))
-        prop_fp = os.path.join(self.results, 'proportion_plot.pdf')
-        self.assertFalse(os.path.exists(prop_fp))
 
-        box_fp = os.path.join(self.results, 'balance_metadata.pdf')
-        self.assertTrue(os.path.exists(box_fp))
-        prop_fp = os.path.join(self.results, 'proportion_plot.pdf')
-        self.assertFalse(os.path.exists(prop_fp))
+        self.assertTrue(os.path.exists(index_fp))
+        for file in ['numerator.csv', 'denominator.csv',
+                     'balance_metadata.pdf']:
+            self.assertTrue(os.path.exists(os.path.join(self.results, file)))
+        self.assertFalse(os.path.exists(os.path.join(self.results,
+                                                     'proportion_plot.pdf')))
 
         with open(index_fp, 'r') as fh:
             html = fh.read()
-            self.assertIn('<h1>Balance Taxonomy</h1>', html)
-            self.assertIn('Numerator taxa', html)
-            self.assertIn('Denominator taxa', html)
+            for exp in ['<h1>Balance Taxonomy</h1>', 'Numerator taxa',
+                        'Denominator taxa']:
+                self.assertIn(exp, html)
             self.assertNotIn('Proportion', html)
 
     def test_balance_taxonomy_full_numerical_categorical(self):
-        with self.assertRaisesRegex(ValueError, 'only numerical categories'):
+        with self.assertRaisesRegex(ValueError, 'only numerical values'):
             balance_taxonomy(self.results, self.table, self.tree,
                              self.taxonomy, balance_name='a',
                              metadata=self.full_numerical_categorical)

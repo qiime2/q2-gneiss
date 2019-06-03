@@ -140,14 +140,13 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
             except ValueError:
                 pass
             else:
-                raise ValueError('Your categorical metadata column '
+                raise ValueError('Categorical metadata column '
                                  f'{metadata.name!r} contains only numerical '
-                                 'categories. Note: At least one category '
-                                 'must be non-numerical.')
+                                 'values. At least one value must be '
+                                 'non-numerical.')
 
             balance_boxplot(balance_name, data, y=c.name, ax=ax,
                             palette=sample_palette)
-
             if len(c.value_counts()) > 2:
                 warnings.warn(
                     'More than 2 categories detected in categorical metadata '
