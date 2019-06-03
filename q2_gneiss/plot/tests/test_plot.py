@@ -372,8 +372,7 @@ class TestBalanceTaxonomy(unittest.TestCase):
             self.assertNotIn('Proportion', html)
 
     def test_balance_taxonomy_full_numerical_categorical(self):
-        with self.assertRaisesRegex(ValueError, r".*categorical.*'1', '1.0', "
-                                                "'2', '2.0', '3'"):
+        with self.assertRaisesRegex(ValueError, 'only numerical categories'):
             balance_taxonomy(self.results, self.table, self.tree,
                              self.taxonomy, balance_name='a',
                              metadata=self.full_numerical_categorical)
