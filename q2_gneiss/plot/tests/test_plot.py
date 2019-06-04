@@ -209,6 +209,12 @@ class TestBalanceTaxonomy(unittest.TestCase):
         self.multi_categorical = CategoricalMetadataColumn(
             pd.Series(['a', 'a', 'c', 'b', 'b', 'b', 'c'],
                       index=index, name='multi_categorical'))
+        self.partial_numerical_categorical = CategoricalMetadataColumn(
+            pd.Series(['1', '1', '1', '2', '2', '2', 'a'],
+                      index=index, name='multi_categorical'))
+        self.full_numerical_categorical = CategoricalMetadataColumn(
+            pd.Series(['1', '1', '1.0', '2', '2', '2.0', '3'],
+                      index=index, name='numerical_categorical'))
         self.continuous = NumericMetadataColumn(
             pd.Series(np.arange(7), index=index, name='continuous'))
 
@@ -335,6 +341,31 @@ class TestBalanceTaxonomy(unittest.TestCase):
             self.assertIn('Numerator taxa', html)
             self.assertIn('Denominator taxa', html)
             self.assertNotIn('Proportion', html)
+
+    def test_balance_taxonomy_partial_numerical_categorical(self):
+        index_fp = os.path.join(self.results, 'index.html')
+        balance_taxonomy(self.results, self.table, self.tree,
+                         self.taxonomy, balance_name='a',
+                         metadata=self.partial_numerical_categorical)
+
+        for file in ['numerator.csv', 'denominator.csv',
+                     'balance_metadata.pdf']:
+            self.assertTrue(os.path.exists(os.path.join(self.results, file)))
+        self.assertFalse(os.path.exists(os.path.join(self.results,
+                                                     'proportion_plot.pdf')))
+
+        with open(index_fp, 'r') as fh:
+            html = fh.read()
+            for exp in ['<h1>Balance Taxonomy</h1>', 'Numerator taxa',
+                        'Denominator taxa']:
+                self.assertIn(exp, html)
+            self.assertNotIn('Proportion', html)
+
+    def test_balance_taxonomy_full_numerical_categorical(self):
+        with self.assertRaisesRegex(ValueError, 'only numerical values'):
+            balance_taxonomy(self.results, self.table, self.tree,
+                             self.taxonomy, balance_name='a',
+                             metadata=self.full_numerical_categorical)
 
     def test_balance_taxonomy_continuous(self):
         index_fp = os.path.join(self.results, 'index.html')

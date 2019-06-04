@@ -134,6 +134,17 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
             sample_palette = pd.Series(
                 sns.color_palette("Set2", len(c.value_counts())),
                 index=c.value_counts().index)
+
+            try:
+                pd.to_numeric(metadata.to_series())
+            except ValueError:
+                pass
+            else:
+                raise ValueError('Categorical metadata column '
+                                 f'{metadata.name!r} contains only numerical '
+                                 'values. At least one value must be '
+                                 'non-numerical.')
+
             balance_boxplot(balance_name, data, y=c.name, ax=ax,
                             palette=sample_palette)
             if len(c.value_counts()) > 2:
