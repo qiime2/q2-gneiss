@@ -348,7 +348,6 @@ class TestBalanceTaxonomy(unittest.TestCase):
                          self.taxonomy, balance_name='a',
                          metadata=self.partial_numerical_categorical)
 
-        self.assertTrue(os.path.exists(index_fp))
         for file in ['numerator.csv', 'denominator.csv',
                      'balance_metadata.pdf']:
             self.assertTrue(os.path.exists(os.path.join(self.results, file)))
