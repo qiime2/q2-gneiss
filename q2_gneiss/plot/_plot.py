@@ -103,8 +103,8 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
             balance_name, len(denom_features)))
     ax_denom.set_xlabel('Number of unique taxa')
     plt.tight_layout()
-    fig.savefig(os.path.join(output_dir, 'barplots.svg'))
-    fig.savefig(os.path.join(output_dir, 'barplots.pdf'))
+    fig.savefig(os.path.join(output_dir, 'barplots.svg'), bbox_inches='tight')
+    fig.savefig(os.path.join(output_dir, 'barplots.pdf'), bbox_inches='tight')
 
     dcat = None
     multiple_cats = False
@@ -166,8 +166,10 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                                             balance_name)
         ax.set_title(ylabel, rotation=0)
         ax.set_ylabel('log ratio')
-        fig2.savefig(os.path.join(output_dir, 'balance_metadata.svg'))
-        fig2.savefig(os.path.join(output_dir, 'balance_metadata.pdf'))
+        fig2.savefig(os.path.join(
+            output_dir, 'balance_metadata.svg'), bbox_inches='tight')
+        fig2.savefig(os.path.join(
+            output_dir, 'balance_metadata.pdf'), bbox_inches='tight')
 
         if not multiple_cats:
             # Proportion plots
@@ -262,8 +264,10 @@ def balance_taxonomy(output_dir: str, table: pd.DataFrame, tree: TreeNode,
                 hspace=0.2,
             )
 
-            fig3.savefig(os.path.join(output_dir, 'proportion_plot.svg'))
-            fig3.savefig(os.path.join(output_dir, 'proportion_plot.pdf'))
+            fig3.savefig(os.path.join(
+                output_dir, 'proportion_plot.svg'), bbox_inches='tight')
+            fig3.savefig(os.path.join(
+                output_dir, 'proportion_plot.pdf'), bbox_inches='tight')
 
     index_fp = os.path.join(output_dir, 'index.html')
     with open(index_fp, 'w') as index_f:
@@ -384,8 +388,8 @@ def dendrogram_heatmap(output_dir: str, table: pd.DataFrame,
     # will need to have some adaptive defaults set in the future
     fig = heatmap(mat, tree, c, highlights, cmap=color_map,
                   highlight_width=0.01, figsize=(12, 8))
-    fig.savefig(os.path.join(output_dir, 'heatmap.svg'))
-    fig.savefig(os.path.join(output_dir, 'heatmap.pdf'))
+    fig.savefig(os.path.join(output_dir, 'heatmap.svg'), bbox_inches='tight')
+    fig.savefig(os.path.join(output_dir, 'heatmap.pdf'), bbox_inches='tight')
 
     css = r"""
         .square {
