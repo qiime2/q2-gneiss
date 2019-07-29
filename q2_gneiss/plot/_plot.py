@@ -330,7 +330,8 @@ plugin.visualizers.register_function(
     },
     name='Balance Summary',
     description=("Visualize the distribution of a single balance "
-                 "and summarize its numerator and denominator components.")
+                 "and summarize its numerator and denominator components."),
+    deprecated=True,
 )
 
 
@@ -451,5 +452,6 @@ plugin.visualizers.register_function(
     description=("Visualize the feature table as a heatmap, "
                  "with samples sorted along a specified categorical metadata "
                  "column and features clustered together specified by the "
-                 "tree.")
+                 "tree."),
+    deprecated=True,
 )
