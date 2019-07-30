@@ -60,7 +60,8 @@ plugin.visualizers.register_function(
     },
     description=("Perform linear regression on balances. This will tell you"
                  "how much variability is explained by metadata "
-                 "categories in your formula.")
+                 "categories in your formula."),
+    deprecated=True,
 )
 
 
@@ -106,5 +107,6 @@ plugin.visualizers.register_function(
     },
     description="Build and run linear mixed effects model on balances. "
                 "Use LME over OLS when you have repeated measurements "
-                "such as (timeseries)."
+                "such as (timeseries).",
+    deprecated=True,
 )
