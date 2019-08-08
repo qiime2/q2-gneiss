@@ -69,6 +69,7 @@ plugin.methods.register_function(
 
 def gradient_clustering(table: pd.DataFrame,
                         gradient: NumericMetadataColumn,
+                        ignore_missing_samples: bool = False,
                         weighted: bool = True) -> skbio.TreeNode:
     """ Builds a tree for features based on a gradient.
 
@@ -78,6 +79,9 @@ def gradient_clustering(table: pd.DataFrame,
        Contingency table where rows are samples and columns are features.
     gradient : qiime2.NumericMetadataColumn
        Continuous vector of measurements corresponding to samples.
+    ignore_missing_samples: bool
+        Whether to except or ignore when there are samples present in the table
+        that are not present in the gradient metadata.
     weighted : bool
        Specifies if abundance or presence/absence information
        should be used to perform the clustering.
@@ -88,6 +92,14 @@ def gradient_clustering(table: pd.DataFrame,
        Represents the partitioning of features with respect to the gradient.
     """
     c = gradient.to_series()
+    if not ignore_missing_samples:
+        difference = set(table.index) - set(c.index)
+        if difference:
+            raise KeyError("There are samples present in the table not "
+                           "present in the gradient metadata column. Override "
+                           "this error by using the `ignore_missing_samples` "
+                           "argument. Offending samples: %r"
+                           % ', '.join(sorted([str(i) for i in difference])))
     if not weighted:
         table = (table > 0).astype(np.float)
     table, c = match(table, c)
@@ -109,7 +121,8 @@ plugin.methods.register_function(
         'table': ('The feature table containing the samples in which '
                   'the columns will be clustered.'),
     },
-    parameters={'gradient': MetadataColumn[Numeric], 'weighted': Bool},
+    parameters={'gradient': MetadataColumn[Numeric], 'weighted': Bool,
+                'ignore_missing_samples': Bool},
     parameter_descriptions={
         'gradient': ('Contains gradient values to sort the '
                      'features and samples.'),

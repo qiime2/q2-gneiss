@@ -81,6 +81,26 @@ class TestClusteringPlugin(unittest.TestCase):
 
         self.assertNotEqual(str(res_clust_uw), str(res_clust_w))
 
+    def test_gradient_missing_samples(self):
+        from qiime2.plugins.gneiss.methods import gradient_clustering
+        table = pd.DataFrame({"x": 1, "y": 2}, index=["a", "s1"])
+        table = qiime2.Artifact.import_data("FeatureTable[Frequency]", table)
+        metadata = qiime2.Metadata.load(get_data_path("test_metadata.txt"))
+
+        with self.assertRaisesRegex(KeyError, "not present.*a"):
+            gradient_clustering(table, metadata.get_column("x"))
+
+    def test_gradient_ignore_missing_samples(self):
+        from qiime2.plugins.gneiss.methods import gradient_clustering
+        table = pd.DataFrame({"x": 1, "y": 2}, index=["a", "s1"])
+        table = qiime2.Artifact.import_data("FeatureTable[Frequency]", table)
+        metadata = qiime2.Metadata.load(get_data_path("test_metadata.txt"))
+
+        gradient_clustering(table, metadata.get_column("x"),
+                            ignore_missing_samples=True)
+        # Checkpoint assertion
+        self.assertTrue(True)
+
     def test_assign_ids(self):
         from qiime2.plugins.gneiss.methods import assign_ids
         tree_f = get_data_path("tree.qza")
