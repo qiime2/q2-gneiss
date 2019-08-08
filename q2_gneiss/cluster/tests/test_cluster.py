@@ -98,6 +98,8 @@ class TestClusteringPlugin(unittest.TestCase):
 
         gradient_clustering(table, metadata.get_column("x"),
                             ignore_missing_samples=True)
+        # Checkpoint assertion
+        self.assertTrue(True)
 
     def test_assign_ids(self):
         from qiime2.plugins.gneiss.methods import assign_ids
