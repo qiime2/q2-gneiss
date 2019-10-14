@@ -43,10 +43,10 @@ class TestOLSPlugin(unittest.TestCase):
         res_pvalue = pd.read_csv(os.path.join('regression_summary_dir',
                                               'pvalues.csv'),
                                  index_col=0)
-        res_pvalue = res_pvalue.reindex_axis(
+        res_pvalue = res_pvalue.reindex(
             sorted(res_pvalue.columns), axis=1)
         exp_pvalue = pd.read_csv(get_data_path('pvalues.csv'), index_col=0)
-        exp_pvalue = exp_pvalue.reindex_axis(
+        exp_pvalue = exp_pvalue.reindex(
             sorted(exp_pvalue.columns), axis=1)
 
         pdt.assert_frame_equal(res_pvalue.sort_index(),
@@ -56,9 +56,9 @@ class TestOLSPlugin(unittest.TestCase):
         res_resid = pd.read_csv(os.path.join('regression_summary_dir',
                                              'residuals.csv'),
                                 index_col=0)
-        res_resid = res_resid.reindex_axis(sorted(res_resid.columns), axis=1)
+        res_resid = res_resid.reindex(sorted(res_resid.columns), axis=1)
         exp_resid = pd.read_csv(get_data_path('residuals.csv'), index_col=0)
-        exp_resid = exp_resid.reindex_axis(sorted(exp_resid.columns), axis=1)
+        exp_resid = exp_resid.reindex(sorted(exp_resid.columns), axis=1)
         pdt.assert_frame_equal(res_resid.sort_index(),
                                exp_resid.sort_index())
         shutil.rmtree('regression_summary_dir')
