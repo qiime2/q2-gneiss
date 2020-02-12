@@ -25,4 +25,5 @@ plugin = qiime2.plugin.Plugin(
     package='q2_gneiss')
 
 importlib.import_module('q2_gneiss.composition')
+importlib.import_module('q2_gneiss.plot')
 importlib.import_module('q2_gneiss.cluster')
