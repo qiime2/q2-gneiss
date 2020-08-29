@@ -1,6 +1,7 @@
+from ._format import CladeMetadataFormat
+from ..plugin_setup import plugin
 import pandas as pd
 import qiime2
-import . import CladeMetadataFormat
 
 
 # differential types

@@ -5,7 +5,7 @@ from ._format import CladeMetadataDirectoryFormat
 
 
 CladeMetadata = SemanticType('CladeMetadata',
-                            variant_of=FeatureData.field['type'])
+                             variant_of=FeatureData.field['type'])
 
 plugin.register_semantic_types(CladeMetadata)
 

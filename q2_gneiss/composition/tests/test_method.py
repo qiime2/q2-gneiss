@@ -136,8 +136,7 @@ class TestILRTransform(unittest.TestCase):
              [-0.693147, -5.551115e-17, -3.892122e-17]],
             columns=['y0', 'y1', 'y2'],
             index=[1, 2, 3])
-        #print(res_tree.ascii_art())
-        #print(res_ord.samples)
+
         exp_balances = exp_balances[['y0', 'y2', 'y1']]
 
         pdt.assert_frame_equal(res_ord.samples, exp_balances)
@@ -145,10 +144,10 @@ class TestILRTransform(unittest.TestCase):
                         '(c:0.025,d:0.025)y2:0.2)y0;\n')
         self.assertEqual(str(res_tree), exp_tree_str)
 
-        exp_md = pd.DataFrame([[-0.5,   0.000000, -0.707107],
-                               [-0.5,   0.000000,  0.707107],
-                               [ 0.5,  -0.707107,  0.000000],
-                               [ 0.5,   0.707107,  0.000000]],
+        exp_md = pd.DataFrame([[-0.5, 0.000000, -0.707107],
+                               [-0.5, 0.000000, 0.707107],
+                               [0.5, -0.707107, 0.000000],
+                               [0.5, 0.707107, 0.000000]],
                               columns=['y0', 'y2', 'y1'],
                               index=['b', 'a', 'c', 'd'])
         pdt.assert_frame_equal(res_md, exp_md)

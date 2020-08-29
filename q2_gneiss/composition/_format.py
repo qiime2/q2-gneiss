@@ -1,6 +1,6 @@
 import qiime2
 import qiime2.plugin.model as model
-from ..plugin_setup import plugin
+from qiime2.plugin import ValidationError
 
 
 class CladeMetadataFormat(model.TextFileFormat):

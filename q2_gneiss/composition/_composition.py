@@ -14,7 +14,7 @@ from q2_types.ordination import PCoAResults
 from q2_gneiss.composition._method import (
     ilr_hierarchical, ilr_phylogenetic, ilr_phylogenetic_ordination
 )
-from qiime2.plugin import Float, Metadata, Int, List, Str
+from qiime2.plugin import Float, Int, List, Str
 from ._type import CladeMetadata
 
 
@@ -108,7 +108,7 @@ plugin.methods.register_function(
     output_descriptions={
         'ordination': ('The resulting ordination from the '
                        'ilr transform.'),
-        'clade_metadata' : ('Metadata specifying clade membership.'),
+        'clade_metadata': ('Metadata specifying clade membership.'),
         'hierarchy': 'Hierarchy from bifurcated phylogeny'},
     description="Compute an ILR ordination given a rooted phylogeny."
 )

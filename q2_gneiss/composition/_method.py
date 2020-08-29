@@ -32,10 +32,10 @@ def ilr_phylogenetic(table: pd.DataFrame, tree: skbio.TreeNode,
     return ilr_transform(add_pseudocount(table, pseudocount), t), t
 
 
-def ilr_phylogenetic_ordination(table : pd.DataFrame, tree: skbio.TreeNode,
-                                pseudocount : float=0.5,
-                                top_k_var : int = 10,
-                                clades : str = None) -> (
+def ilr_phylogenetic_ordination(table: pd.DataFrame, tree: skbio.TreeNode,
+                                pseudocount: float = 0.5,
+                                top_k_var: int = 10,
+                                clades: str = None) -> (
                                     pd.DataFrame, skbio.TreeNode, pd.DataFrame
                                 ):
     t = tree.copy()
