@@ -36,7 +36,7 @@ def ilr_phylogenetic_ordination(table: pd.DataFrame, tree: skbio.TreeNode,
                                 pseudocount: float = 0.5,
                                 top_k_var: int = 10,
                                 clades: str = None) -> (
-                                    pd.DataFrame, skbio.TreeNode, pd.DataFrame
+                                    OrdinationResults, skbio.TreeNode, pd.DataFrame
                                 ):
     t = tree.copy()
     t.bifurcate()
