@@ -81,7 +81,7 @@ plugin.methods.register_function(
     inputs={'table': FeatureTable[Frequency | Composition],
             'tree': Phylogeny[Rooted]},
     outputs=[('ordination', PCoAResults),
-             ('clade_metadata', CladeMetadata),
+             ('clade_metadata', FeatureData[CladeMetadata]),
              ('bifurcated_tree', Phylogeny[Rooted])],
     parameters={'pseudocount': Float,
                 'top_k_var': Int,
