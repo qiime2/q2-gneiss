@@ -27,3 +27,6 @@ class CladeMetadataFormat(model.TextFileFormat):
 
 CladeMetadataDirectoryFormat = model.SingleFileDirectoryFormat(
     'CladeMetadataDirectoryFormat', 'clade_metadata.tsv', CladeMetadataFormat)
+
+
+plugin.register_formats(CladeMetadataFormat, CladeMetadataDirectoryFormat)
