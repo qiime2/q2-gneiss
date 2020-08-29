@@ -9,7 +9,7 @@ from q2_types.tree import Hierarchy, Phylogeny, Rooted
 from q2_gneiss.plugin_setup import plugin
 from q2_types.feature_table import (FeatureTable, Frequency,
                                     Balance, Composition)
-from q2_types.feature_data import FeatureData
+from q2_types.feature_data import FeatureData, Differential
 from q2_types.ordination import PCoAResults
 
 from q2_gneiss.composition._method import (
@@ -17,6 +17,7 @@ from q2_gneiss.composition._method import (
 )
 from qiime2.plugin import Float, Int, List, Str
 from ._type import CladeMetadata
+
 
 
 plugin.methods.register_function(
@@ -83,7 +84,7 @@ plugin.methods.register_function(
             'tree': Phylogeny[Rooted]},
     outputs=[('ordination', PCoAResults),
              ('bifurcated_tree', Phylogeny[Rooted]),
-             ('clade_metadata', FeatureData[CladeMetadata])],
+             ('clade_metadata', FeatureData[Differential])],
     parameters={'pseudocount': Float,
                 'top_k_var': Int,
                 'clades': List[Str]},

@@ -51,7 +51,7 @@ def ilr_phylogenetic_ordination(table: pd.DataFrame, tree: skbio.TreeNode,
     if not clades:
         clades = var.index[:top_k_var]
     balances = balances[clades]
-
+    balances.index.name = 'sampleid'
     # feature metadata
     basis = basis[clades]
     eigvals = var[clades]
@@ -63,4 +63,5 @@ def ilr_phylogenetic_ordination(table: pd.DataFrame, tree: skbio.TreeNode,
         eigvals=eigvals,
         proportion_explained=prop
     )
+    basis.index.name = 'featureid'
     return balances, _tree, basis
