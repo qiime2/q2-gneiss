@@ -86,7 +86,7 @@ plugin.methods.register_function(
     parameters={'pseudocount': Float,
                 'top_k_var': Int,
                 'clades': List[Str]},
-    name='Isometric Log-ratio Transform applied to a phylogenetic tree',
+    name='Ordination through a phylogenetic Isometric Log Ratio transform.',
     input_descriptions={
         'table': ('The feature table containing the samples in which '
                   'the ilr transform will be performed.'),
