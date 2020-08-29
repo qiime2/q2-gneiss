@@ -8,6 +8,7 @@
 import qiime2
 import qiime2.plugin.model as model
 from qiime2.plugin import ValidationError
+from ..plugin_setup import plugin
 
 
 class CladeMetadataFormat(model.TextFileFormat):
