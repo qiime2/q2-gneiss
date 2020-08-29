@@ -82,7 +82,7 @@ plugin.methods.register_function(
             'tree': Phylogeny[Rooted]},
     outputs=[('ordination', PCoAResults),
              ('clade_metadata', CladeMetadata),
-             ('hierarchy', Hierarchy)],
+             ('bifurcated_tree', Phylogeny[Rooted])],
     parameters={'pseudocount': Float,
                 'top_k_var': Int,
                 'clades': List[Str]},
@@ -109,6 +109,6 @@ plugin.methods.register_function(
         'ordination': ('The resulting ordination from the '
                        'ilr transform.'),
         'clade_metadata': ('Metadata specifying clade membership.'),
-        'hierarchy': 'Hierarchy from bifurcated phylogeny'},
+        'bifurcated_tree': 'Bifurcating phylogeny'},
     description="Compute an ILR ordination given a rooted phylogeny."
 )
