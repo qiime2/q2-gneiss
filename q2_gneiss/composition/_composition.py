@@ -9,6 +9,7 @@ from q2_types.tree import Hierarchy, Phylogeny, Rooted
 from q2_gneiss.plugin_setup import plugin
 from q2_types.feature_table import (FeatureTable, Frequency,
                                     Balance, Composition)
+from q2_types.feature_data import FeatureData
 from q2_types.ordination import PCoAResults
 
 from q2_gneiss.composition._method import (
@@ -81,8 +82,8 @@ plugin.methods.register_function(
     inputs={'table': FeatureTable[Frequency | Composition],
             'tree': Phylogeny[Rooted]},
     outputs=[('ordination', PCoAResults),
-             ('clade_metadata', FeatureData[CladeMetadata]),
-             ('bifurcated_tree', Phylogeny[Rooted])],
+             ('bifurcated_tree', Phylogeny[Rooted]),
+             ('clade_metadata', FeatureData[CladeMetadata])],
     parameters={'pseudocount': Float,
                 'top_k_var': Int,
                 'clades': List[Str]},
@@ -108,7 +109,8 @@ plugin.methods.register_function(
     output_descriptions={
         'ordination': ('The resulting ordination from the '
                        'ilr transform.'),
-        'clade_metadata': ('Metadata specifying clade membership.'),
-        'bifurcated_tree': 'Bifurcating phylogeny'},
+        'bifurcated_tree': 'Bifurcating phylogeny',
+        'clade_metadata': ('Metadata specifying clade membership.')
+    },
     description="Compute an ILR ordination given a rooted phylogeny."
 )
