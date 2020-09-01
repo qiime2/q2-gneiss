@@ -42,7 +42,8 @@ def ilr_phylogenetic_differential(
     in_nodes = [n.name for n in _tree.levelorder() if not n.is_tip()]
     basis = _balance_basis(_tree)[0]
     basis = pd.DataFrame(basis.T, index=diff.columns, columns=in_nodes)
-    diff_balances = diff @ basis
+    diff_balances = (diff @ basis).T
+    diff_balances.index.name = 'featureid'
     return diff_balances, t
 
 

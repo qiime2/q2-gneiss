@@ -82,7 +82,7 @@ plugin.methods.register_function(
     function=ilr_phylogenetic_differential,
     inputs={'differential': FeatureData[Differential],
             'tree': Phylogeny[Rooted]},
-    outputs=[('differential', FeatureData[Differential]),
+    outputs=[('ilr_differential', FeatureData[Differential]),
              ('bifurcated_tree', Phylogeny[Rooted])],
     name=('Differentially abundant Phylogenetic Log Ratios.'),
     parameters={},
@@ -102,7 +102,7 @@ plugin.methods.register_function(
     },
     parameter_descriptions={},
     output_descriptions={
-        'differential': 'Per microbe differential abundance results.',
+        'ilr_differential': 'Per microbe differential abundance results.',
         'bifurcated_tree': 'Bifurcating phylogeny'
     },
     description=("Compute an ILR transform of differentials "
