@@ -13,11 +13,11 @@ from q2_types.feature_data import FeatureData, Differential
 from q2_types.ordination import PCoAResults
 
 from q2_gneiss.composition._method import (
-    ilr_hierarchical, ilr_phylogenetic, ilr_phylogenetic_ordination
+    ilr_hierarchical, ilr_phylogenetic,
+    ilr_phylogenetic_differential,
+    ilr_phylogenetic_ordination
 )
 from qiime2.plugin import Float, Int, List, Str
-from ._type import CladeMetadata
-
 
 
 plugin.methods.register_function(
@@ -77,6 +77,37 @@ plugin.methods.register_function(
     description="Calculate balances given a rooted phylogeny."
 )
 
+
+plugin.methods.register_function(
+    function=ilr_phylogenetic_differential,
+    inputs={'differential': FeatureData[Differential],
+            'tree': Phylogeny[Rooted]},
+    outputs=[('differential', FeatureData[Differential]),
+             ('bifurcated_tree', Phylogeny[Rooted])],
+    name=('Differentially abundant Phylogenetic Log Ratios.'),
+    parameters={},
+    input_descriptions={
+        'differential': (
+            'The differential abundance results in which '
+            'will be ilr transformed.'),
+        'tree': ('A rooted phylogeny of feature identifiers that defines '
+                 'the partitions of features.  Each tip in the hierarchy'
+                 'corresponds to the feature identifiers in the table. '
+                 'This tree can contain tip ids that are not present in '
+                 'the table, but all feature ids in the table must be '
+                 'present in this tree.  This assumes that all of the '
+                 'internal nodes in the tree have labels. This tree may '
+                 'contain polytomic nodes (i.e., nodes with more than '
+                 'two children), in which case they will be bifurcated.')
+    },
+    parameter_descriptions={},
+    output_descriptions={
+        'differential': 'Per microbe differential abundance results.',
+        'bifurcated_tree': 'Bifurcating phylogeny'
+    },
+    description=("Compute an ILR transform of differentials "
+                 "given a rooted phylogeny.")
+)
 
 plugin.methods.register_function(
     function=ilr_phylogenetic_ordination,

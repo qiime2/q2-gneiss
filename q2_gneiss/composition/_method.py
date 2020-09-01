@@ -32,11 +32,26 @@ def ilr_phylogenetic(table: pd.DataFrame, tree: skbio.TreeNode,
     return ilr_transform(add_pseudocount(table, pseudocount), t), t
 
 
+def ilr_phylogenetic_differential(
+        differential: pd.DataFrame, tree: skbio.TreeNode) -> (
+            pd.DataFrame, skbio.TreeNode):
+    t = tree.copy()
+    t.bifurcate()
+    diff, _tree = match_tips(differential.T, t)
+    _tree = rename_internal_nodes(_tree)
+    in_nodes = [n.name for n in _tree.levelorder() if not n.is_tip()]
+    basis = _balance_basis(_tree)[0]
+    basis = pd.DataFrame(basis.T, index=diff.columns, columns=in_nodes)
+    diff_balances = diff @ basis
+    return diff_balances, t
+
+
 def ilr_phylogenetic_ordination(table: pd.DataFrame, tree: skbio.TreeNode,
                                 pseudocount: float = 0.5,
                                 top_k_var: int = 10,
                                 clades: str = None) -> (
-                                    OrdinationResults, skbio.TreeNode, pd.DataFrame
+                                    OrdinationResults,
+                                    skbio.TreeNode, pd.DataFrame
                                 ):
     t = tree.copy()
     t.bifurcate()
