@@ -50,7 +50,7 @@ def ilr_phylogenetic_differential(
 def ilr_phylogenetic_ordination(table: pd.DataFrame, tree: skbio.TreeNode,
                                 pseudocount: float = 0.5,
                                 top_k_var: int = 10,
-                                clades: str = None) -> (
+                                clades: list = None) -> (
                                     OrdinationResults,
                                     skbio.TreeNode, pd.DataFrame
                                 ):
@@ -66,6 +66,8 @@ def ilr_phylogenetic_ordination(table: pd.DataFrame, tree: skbio.TreeNode,
     var = balances.var(axis=0).sort_values(ascending=False)
     if not clades:
         clades = var.index[:top_k_var]
+    else:
+        clades = clades[0].split(',')
     balances = balances[clades]
     balances.index.name = 'sampleid'
     # feature metadata

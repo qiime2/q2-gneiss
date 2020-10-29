@@ -8,11 +8,8 @@
 from ._composition import (
     ilr_hierarchical, ilr_phylogenetic, ilr_phylogenetic_ordination
 )
-from ._type import CladeMetadata
-from ._format import CladeMetadataDirectoryFormat, CladeMetadataFormat
 
 
 __all__ = [
-    "ilr_hierarchical", "ilr_phylogenetic", "ilr_phylogenetic_ordination",
-    "CladeMetadata", "CladeMetadataDirectoryFormat", "CladeMetadataFormat"
+    "ilr_hierarchical", "ilr_phylogenetic", "ilr_phylogenetic_ordination"
 ]

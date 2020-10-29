@@ -138,7 +138,7 @@ class TestILRTransform(unittest.TestCase):
             index=[1, 2, 3])
 
         exp_balances = exp_balances[['y0', 'y2', 'y1']]
-
+        exp_balances.index.name = 'sampleid'
         pdt.assert_frame_equal(res_ord.samples, exp_balances)
         exp_tree_str = ('((b:0.025,a:0.025)y1:0.2,'
                         '(c:0.025,d:0.025)y2:0.2)y0;\n')
@@ -150,6 +150,7 @@ class TestILRTransform(unittest.TestCase):
                                [0.5, 0.707107, 0.000000]],
                               columns=['y0', 'y2', 'y1'],
                               index=['b', 'a', 'c', 'd'])
+        exp_md.index.name = 'featureid'
         pdt.assert_frame_equal(res_md, exp_md)
 
 
