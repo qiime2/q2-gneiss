@@ -120,6 +120,7 @@ def ilr_phylogenetic_ordination(table: pd.DataFrame, tree: skbio.TreeNode,
         short_method_name='ILR',
         long_method_name='Phylogenetic Isometric Log Ratio Transform',
         samples=balances,
+        features=pd.DataFrame(np.eye(len(clades)), index=clades),
         eigvals=eigvals,
         proportion_explained=prop
     )
