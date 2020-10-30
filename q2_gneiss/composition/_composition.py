@@ -102,12 +102,13 @@ plugin.methods.register_function(
     },
     parameter_descriptions={},
     output_descriptions={
-        'ilr_differential': 'Per microbe differential abundance results.',
-        'bifurcated_tree': 'Bifurcating phylogeny'
+        'ilr_differential': 'Per clade differential abundance results.',
+        'bifurcated_tree': 'Bifurcating phylogeny.'
     },
     description=("Compute an ILR transform of differentials "
                  "given a rooted phylogeny.")
 )
+
 
 plugin.methods.register_function(
     function=ilr_phylogenetic_ordination,
