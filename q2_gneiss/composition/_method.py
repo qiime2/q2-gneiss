@@ -99,19 +99,20 @@ def ilr_phylogenetic_ordination(table: pd.DataFrame, tree: skbio.TreeNode,
     _table, _tree = match_tips(table, t)
     _tree = rename_internal_nodes(_tree)
     if not clades:
-        clades = var.index[:top_k_var]
         in_nodes = [n.name for n in _tree.levelorder() if not n.is_tip()]
         basis = _balance_basis(_tree)[0]
         _table = add_pseudocount(_table, pseudocount)
         basis = pd.DataFrame(basis.T, index=_table.columns, columns=in_nodes)
         balances = np.log(_table) @ basis
+        var = balances.var(axis=0).sort_values(ascending=False)
+        clades = var.index[:top_k_var]
         balances = balances[clades]
         basis = basis[clades]
     else:
         clades = clades[0].split(',')
         balances, basis = _fast_ilr(_tree, _table, clades, pseudocount=0.5)
+        var = balances.var(axis=0).sort_values(ascending=False)
 
-    var = balances.var(axis=0).sort_values(ascending=False)
     balances.index.name = 'sampleid'
     # feature metadata
     eigvals = var
