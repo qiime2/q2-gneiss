@@ -52,3 +52,4 @@ jobs:
         package-name: q2-gneiss
         build-target: staging
         additional-tests: py.test --pyargs q2_gneiss
+        library-token: ${{ secrets.LIBRARY_TOKEN }}
