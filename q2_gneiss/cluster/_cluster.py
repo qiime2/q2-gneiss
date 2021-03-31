@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------------
 import uuid
 import pandas as pd
-import numpy as np
 import skbio
 
 from q2_types.feature_table import (FeatureTable, Frequency, RelativeFrequency,
