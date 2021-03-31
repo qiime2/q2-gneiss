@@ -101,7 +101,7 @@ def gradient_clustering(table: pd.DataFrame,
                            "argument. Offending samples: %r"
                            % ', '.join(sorted([str(i) for i in difference])))
     if not weighted:
-        table = (table > 0).astype(np.float)
+        table = (table > 0).astype(float)
     table, c = match(table, c)
     t = gradient_linkage(table, c, method='average')
     mean_g = mean_niche_estimator(table, c)

@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from skbio.tree import TreeNode
 from gneiss.cluster import gradient_linkage
-import pandas.util.testing as pdt
+import pandas.testing as pdt
 
 from q2_gneiss.composition._method import (
     ilr_hierarchical, ilr_phylogenetic, ilr_phylogenetic_ordination
