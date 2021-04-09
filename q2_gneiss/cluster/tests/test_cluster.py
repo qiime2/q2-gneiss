@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# Copyright (c) 2017-2020, QIIME 2 development team.
+# Copyright (c) 2017-2021, QIIME 2 development team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -10,7 +10,7 @@ import qiime2
 import pandas as pd
 from skbio.util import get_data_path
 from skbio import TreeNode
-import pandas.util.testing as pdt
+import pandas.testing as pdt
 import numpy.testing as npt
 
 

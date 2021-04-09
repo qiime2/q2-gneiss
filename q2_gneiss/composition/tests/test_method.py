@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# Copyright (c) 2017-2020, QIIME 2 development team.
+# Copyright (c) 2017-2021, QIIME 2 development team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from skbio.tree import TreeNode
 from gneiss.cluster import gradient_linkage
-import pandas.util.testing as pdt
+import pandas.testing as pdt
 
 from q2_gneiss.composition._method import (
     ilr_hierarchical, ilr_phylogenetic, ilr_phylogenetic_ordination
@@ -137,18 +137,18 @@ class TestILRTransform(unittest.TestCase):
             columns=['y0', 'y1', 'y2'],
             index=[1, 2, 3])
 
-        exp_balances = exp_balances[['y0', 'y2', 'y1']]
+        exp_balances = exp_balances[['y0', 'y1', 'y2']]
         exp_balances.index.name = 'sampleid'
         pdt.assert_frame_equal(res_ord.samples, exp_balances)
         exp_tree_str = ('((b:0.025,a:0.025)y1:0.2,'
                         '(c:0.025,d:0.025)y2:0.2)y0;\n')
         self.assertEqual(str(res_tree), exp_tree_str)
 
-        exp_md = pd.DataFrame([[-0.5, 0.000000, -0.707107],
-                               [-0.5, 0.000000, 0.707107],
-                               [0.5, -0.707107, 0.000000],
-                               [0.5, 0.707107, 0.000000]],
-                              columns=['y0', 'y2', 'y1'],
+        exp_md = pd.DataFrame([[-0.5, -0.707107, 0.000000],
+                               [-0.5, 0.707107, 0.000000],
+                               [0.5, 0.000000, -0.707107],
+                               [0.5, 0.000000, 0.707107]],
+                              columns=['y0', 'y1', 'y2'],
                               index=['b', 'a', 'c', 'd'])
         exp_md.index.name = 'featureid'
         pdt.assert_frame_equal(res_md, exp_md)

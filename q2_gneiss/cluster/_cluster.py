@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# Copyright (c) 2017-2020, QIIME 2 development team.
+# Copyright (c) 2017-2021, QIIME 2 development team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------------
 import uuid
 import pandas as pd
-import numpy as np
 import skbio
 
 from q2_types.feature_table import (FeatureTable, Frequency, RelativeFrequency,
@@ -101,7 +100,7 @@ def gradient_clustering(table: pd.DataFrame,
                            "argument. Offending samples: %r"
                            % ', '.join(sorted([str(i) for i in difference])))
     if not weighted:
-        table = (table > 0).astype(np.float)
+        table = (table > 0).astype(float)
     table, c = match(table, c)
     t = gradient_linkage(table, c, method='average')
     mean_g = mean_niche_estimator(table, c)
