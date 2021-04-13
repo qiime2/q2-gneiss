@@ -13,7 +13,8 @@ from gneiss.cluster import gradient_linkage
 import pandas.testing as pdt
 
 from q2_gneiss.composition._method import (
-    ilr_hierarchical, ilr_phylogenetic, ilr_phylogenetic_ordination
+    ilr_hierarchical, ilr_phylogenetic, ilr_phylogenetic_ordination,
+    ilr_phylogenetic_posterior_differential,
 )
 from q2_gneiss._util import add_pseudocount
 
@@ -152,6 +153,25 @@ class TestILRTransform(unittest.TestCase):
                               index=['b', 'a', 'c', 'd'])
         exp_md.index.name = 'featureid'
         pdt.assert_frame_equal(res_md, exp_md)
+
+    def test_ilr_tensor(self):
+        import xarray as xr
+        data = np.array(
+            [[0, 0, 1, 1],
+             [0, 0, 1, 2],
+             [0, 0, 1, 3]]
+        ).T
+        # TODO: the order of the dims really matters here
+        dataset = xr.DataArray(
+            data,
+            dims=['features', 'monte_carlo_samples'],
+            coords=[['a', 'b', 'c', 'd'], [0, 1, 2]]
+        )
+        dataset.name = 'diff'
+        dataset = dataset.to_dataset()
+        tree = TreeNode.read([u"(((b,a)f, c),d)r;"])
+        ilr_phylogenetic_posterior_differential(dataset, tree, True)
+        ilr_phylogenetic_posterior_differential(dataset, tree, False)
 
 
 if __name__ == '__main__':

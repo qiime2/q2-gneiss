@@ -9,13 +9,15 @@ import numpy as np
 import pandas as pd
 import skbio
 from gneiss.composition import ilr_transform
+from gneiss.balances import sparse_balance_basis
 from gneiss.util import match_tips
-from gneiss.util import rename_internal_nodes
+from gneiss.util import rename_internal_nodes, rename_clades
+from gneiss.util import _xarray_match_tips
 from gneiss.util import NUMERATOR, DENOMINATOR
-
-from q2_gneiss._util import add_pseudocount
 from gneiss.balances import _balance_basis
+from q2_gneiss._util import add_pseudocount
 from skbio import OrdinationResults
+import xarray as xr
 
 
 def ilr_hierarchical(table: pd.DataFrame, tree: skbio.TreeNode,
@@ -48,6 +50,51 @@ def ilr_phylogenetic_differential(
     return diff_balances, t
 
 
+def ilr_phylogenetic_posterior_differential(
+        posterior: xr.Dataset, tree: skbio.TreeNode,
+        minimax_filter : bool = True
+) -> (xr.DataArray, pd.DataFrame, skbio.TreeNode):
+    dataset, tree2 = _xarray_match_tips(posterior, tree, 'features')
+    tree2 = rename_clades(tree2)
+    # TODO: watch out for this indexing with diff. The ordering of the dims
+    # could mess things up here.
+    posterior_data = np.array(dataset['diff'].values)
+    basis, nodes = sparse_balance_basis(tree2)  # D-1 x D
+    ilr_tensor = basis @ posterior_data
+    balances = xr.DataArray(
+        ilr_tensor, coords={'balances': nodes},
+        dims=['balances', 'mc_samples'])
+    mc_samples = ilr_tensor.shape[1]
+    # fetches the most significant clades
+    # pull out log-odds ranks
+    bs = pd.DataFrame(ilr_tensor, index=nodes)
+    if minimax_filter:
+        max_taxa = list(set(bs.apply(np.argmax, axis=1).index))
+        min_taxa = list(set(bs.apply(np.argmin, axis=1).index))
+        clades = min_taxa + max_taxa
+    else:
+        pos_sig = (bs > 0).sum(axis=1) == mc_samples
+        neg_sig = (bs < 0).sum(axis=1) == mc_samples
+        pos_clades = list(pos_sig.loc[pos_sig].index)
+        neg_clades = list(neg_sig.loc[neg_sig].index)
+        clades = pos_clades + neg_clades
+    dense_basis = {}
+    # create dense basis
+    features = list(dataset['features'].values)
+    for c in clades:
+        subtree = tree2.find(c)
+        num_tips = get_children(subtree, NUMERATOR)
+        denom_tips = get_children(subtree, DENOMINATOR)
+        r, s = len(num_tips),  len(denom_tips)
+        dense_basis[c] = pd.Series(np.zeros(len(features)),
+                                   index=features)
+        dense_basis[c].loc[num_tips] = np.sqrt(s / (r * (r + s)))
+        dense_basis[c].loc[denom_tips] = -np.sqrt(s / (s * (r + s)))
+    clade_metadata = pd.DataFrame(dense_basis)
+    clade_metadata.index.name = 'featureid'
+    return balances, clade_metadata, tree
+
+
 def get_children(tree, side):
     if tree.children[side].is_tip():
         return [tree.children[side].name]
@@ -77,7 +124,6 @@ def _fast_ilr(tree, table, clades, pseudocount=0.5):
 
         num = logmean(table, num_tips, pseudocount)
         denom = logmean(table, denom_tips, pseudocount)
-        print(num.shape, denom.shape)
         balances[c] = pd.Series(Z * (num - denom), index=table.index)
         basis[c] = pd.Series(np.zeros(len(table.columns)), index=table.columns)
         basis[c].loc[num_tips] = np.sqrt(s / (r * (r + s)))

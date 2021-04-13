@@ -26,6 +26,7 @@ requirements:
     - numpy >=1.15.3
     - statsmodels >=0.9.0  # TODO: fix this upstream
     - pandas
+    - xarray
     - seaborn
     - bokeh
     - biom-format >=2.1.5,<2.2.0

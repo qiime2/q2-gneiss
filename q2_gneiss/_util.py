@@ -7,6 +7,8 @@
 # ----------------------------------------------------------------------------
 
 import pandas as pd
+import xarray as xr
+import skbio
 
 
 def add_pseudocount(table: pd.DataFrame, pseudocount: float = 0.5) -> (
