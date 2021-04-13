@@ -54,7 +54,7 @@ def ilr_phylogenetic_posterior_differential(
         posterior: xr.Dataset, tree: skbio.TreeNode,
         minimax_filter: bool = True
 ) -> (xr.DataArray, pd.DataFrame, skbio.TreeNode):
-    dataset, tree2 = _xarray_match_tips(posterior, tree, 'features')
+    dataset, trimmed_tree = _xarray_match_tips(posterior, tree, 'features')
     trimmed_tree = rename_clades(trimmed_tree)
     # TODO: watch out for this indexing with diff. The ordering of the dims
     # could mess things up here.
