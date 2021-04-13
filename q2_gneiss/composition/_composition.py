@@ -105,10 +105,10 @@ plugin.methods.register_function(
                  'two children), in which case they will be bifurcated.')
     },
     parameter_descriptions={
-        'minimax_filter' : ('If specified, only the clades that have a chance of '
-                            'being the most increased or decreased balance'
-                            'are outputted. If not specified all significant '
-                            'clades are outputted.')
+        'minimax_filter': ('If specified, only the clades that have a '
+                           'chance of being the most increased or decreased '
+                           'balance are outputted. If not specified all '
+                           'significant clades are outputted.')
     },
     output_descriptions={
         'balances': 'Per clade differential abundance results.',
