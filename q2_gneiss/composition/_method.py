@@ -55,11 +55,11 @@ def ilr_phylogenetic_posterior_differential(
         minimax_filter: bool = True
 ) -> (xr.DataArray, pd.DataFrame, skbio.TreeNode):
     dataset, tree2 = _xarray_match_tips(posterior, tree, 'features')
-    tree2 = rename_clades(tree2)
+    trimmed_tree = rename_clades(trimmed_tree)
     # TODO: watch out for this indexing with diff. The ordering of the dims
     # could mess things up here.
     posterior_data = np.array(dataset['diff'].values)
-    basis, nodes = sparse_balance_basis(tree2)  # D-1 x D
+    basis, nodes = sparse_balance_basis(trimmed_tree)  # D-1 x D
     ilr_tensor = basis @ posterior_data
     balances = xr.DataArray(
         ilr_tensor, coords={'balances': nodes},
@@ -82,7 +82,7 @@ def ilr_phylogenetic_posterior_differential(
     # create dense basis
     features = list(dataset['features'].values)
     for c in clades:
-        subtree = tree2.find(c)
+        subtree = trimmed_tree.find(c)
         num_tips = get_children(subtree, NUMERATOR)
         denom_tips = get_children(subtree, DENOMINATOR)
         r, s = len(num_tips),  len(denom_tips)
@@ -92,7 +92,7 @@ def ilr_phylogenetic_posterior_differential(
         dense_basis[c].loc[denom_tips] = -np.sqrt(s / (s * (r + s)))
     clade_metadata = pd.DataFrame(dense_basis)
     clade_metadata.index.name = 'featureid'
-    return balances, clade_metadata, tree2
+    return balances, clade_metadata, trimmed_tree
 
 
 def get_children(tree, side):
