@@ -52,7 +52,7 @@ def ilr_phylogenetic_differential(
 
 def ilr_phylogenetic_posterior_differential(
         posterior: xr.Dataset, tree: skbio.TreeNode,
-        minimax_filter : bool = True
+        minimax_filter: bool = True
 ) -> (xr.DataArray, pd.DataFrame, skbio.TreeNode):
     dataset, tree2 = _xarray_match_tips(posterior, tree, 'features')
     tree2 = rename_clades(tree2)
