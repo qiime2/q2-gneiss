@@ -69,8 +69,8 @@ def ilr_phylogenetic_posterior_differential(
     # pull out log-odds ranks
     bs = pd.DataFrame(ilr_tensor, index=nodes)
     if minimax_filter:
-        max_taxa = list(set(bs.apply(np.argmax, axis=1).index))
-        min_taxa = list(set(bs.apply(np.argmin, axis=1).index))
+        max_taxa = list(set(bs.idxmax().value_counts().index))
+        min_taxa = list(set(bs.idxmin().value_counts().index))
         clades = min_taxa + max_taxa
     else:
         pos_sig = (bs > 0).sum(axis=1) == mc_samples
