@@ -92,7 +92,7 @@ def ilr_phylogenetic_posterior_differential(
         dense_basis[c].loc[denom_tips] = -np.sqrt(s / (s * (r + s)))
     clade_metadata = pd.DataFrame(dense_basis)
     clade_metadata.index.name = 'featureid'
-    return balances, clade_metadata, tree
+    return balances, clade_metadata, tree2
 
 
 def get_children(tree, side):
