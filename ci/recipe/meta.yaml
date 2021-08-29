@@ -29,10 +29,13 @@ requirements:
     - seaborn
     - bokeh
     - biom-format >=2.1.5,<2.2.0
-    - qiime2 {{ release }}.*
-    - q2-types {{ release }}.*
+    - qiime2 {{ qiime2 }}
+    - q2-types {{ q2_types }}
 
 test:
+  requires:
+    - pytest
+
   imports:
     - q2_gneiss
     - qiime2.plugins.gneiss
