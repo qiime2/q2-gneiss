@@ -19,7 +19,7 @@ requirements:
   run:
     - python {{ python }}
     - gneiss >=0.3.0
-    - scikit-bio
+    - scikit-bio {{ scikit_bio }}
     # TODO: This numpy pin should probably be in the gneiss package, rather
     # than in q2-gneiss
     - numpy >=1.15.3
