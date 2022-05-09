@@ -19,15 +19,15 @@ requirements:
   run:
     - python {{ python }}
     - gneiss >=0.3.0
-    - scikit-bio
+    - scikit-bio {{ scikit_bio }}
     # TODO: This numpy pin should probably be in the gneiss package, rather
     # than in q2-gneiss
     - numpy >=1.15.3
     - statsmodels >=0.9.0  # TODO: fix this upstream
-    - pandas
+    - pandas {{ pandas }}
     - seaborn
     - bokeh
-    - biom-format >=2.1.5,<2.2.0
+    - biom-format {{ biom_format }}
     - qiime2 {{ qiime2_epoch }}.*
     - q2-types {{ qiime2_epoch }}.*
 
