@@ -24,7 +24,7 @@ requirements:
     # than in q2-gneiss
     - numpy >=1.15.3
     - statsmodels >=0.9.0  # TODO: fix this upstream
-    - pandas
+    - pandas {{ pandas }}
     - seaborn
     - bokeh
     - biom-format >=2.1.5,<2.2.0
