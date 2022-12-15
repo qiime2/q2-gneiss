@@ -14,12 +14,13 @@ from q2_types.feature_table import (FeatureTable, Frequency, RelativeFrequency,
 from qiime2 import NumericMetadataColumn
 from q2_types.tree import Hierarchy, Phylogeny, Rooted
 from qiime2.plugin import MetadataColumn, Numeric, Bool, Float
-from gneiss.cluster._pba import correlation_linkage, gradient_linkage
+from gneiss.cluster._pba import correlation_linkage
 from gneiss.sort import gradient_sort, mean_niche_estimator
 from gneiss.util import rename_internal_nodes, match, match_tips
 
 from q2_gneiss.plugin_setup import plugin
 from q2_gneiss._util import add_pseudocount
+from q2_gneiss.hacks import gradient_linkage
 
 
 def correlation_clustering(table: pd.DataFrame, pseudocount: float = 0.5
