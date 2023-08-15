@@ -41,6 +41,9 @@ test:
     - q2_gneiss
     - qiime2.plugins.gneiss
 
+  commands:
+    - py.test --pyargs q2_gneiss
+
 about:
   home: https://qiime2.org
   license: BSD-3-Clause
